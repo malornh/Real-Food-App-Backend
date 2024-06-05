@@ -32,5 +32,7 @@ namespace RF1.Models
 
         [Display(Name = "Default Delivery Radius")]
         public double DefaultDeliveryRadius { get; set; }
+
+        public double Rating { get; set; }
     }
 }

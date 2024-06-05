@@ -10,12 +10,12 @@ namespace RF1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ShopController : ControllerBase
+    public class ShopsController : ControllerBase
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
 
-        public ShopController(DataContext context, IMapper mapper)
+        public ShopsController(DataContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -98,6 +98,7 @@ namespace RF1.Controllers
                     Image = s.Image,
                     UserId = s.UserId,
                     Name = s.Name,
+                    Description = s.Description,
                     Latitude = s.Latitude,
                     Longitude = s.Longitude,
                     Rating = s.Rating,
@@ -113,17 +114,6 @@ namespace RF1.Controllers
 
             return Ok(shopDetails);
         }
-
-
-
-
-
-
-
-
-
-
-
 
         // PUT: api/Shops/5
         [HttpPut("{id}")]

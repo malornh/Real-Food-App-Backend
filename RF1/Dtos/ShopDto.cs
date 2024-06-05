@@ -16,6 +16,7 @@ namespace RF1.Models
 
         [Required]
         public string Name { get; set; }
+        public string Description { get; set; }
 
         [Required]
         public string Image { get; set; }
@@ -25,6 +26,7 @@ namespace RF1.Models
 
         [Required]
         public double Longitude { get; set; }
+
         public double Rating { get; set; }
     }
 }

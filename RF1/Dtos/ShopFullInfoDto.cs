@@ -8,6 +8,7 @@ namespace RF1.Dtos
         public string Image { get; set; }
         public string UserId { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public double Rating { get; set; }
@@ -22,18 +23,6 @@ namespace RF1.Dtos
         public ShortProductDto Product { get; set; }
 
         public ShortFarmDto ShortFarm { get; set; }
-    }
-
-    public class ShortProductDto
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string? Description { get; set; }
-        public string Type { get; set; }
-        public double PricePerUnit { get; set; }
-        public UnitOfMeasurement UnitOfMeasurement { get; set; }
-        public string Image { get; set; }
-
     }
 
     public class ShortFarmDto
