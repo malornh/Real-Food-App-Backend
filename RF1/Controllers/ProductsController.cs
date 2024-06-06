@@ -45,9 +45,8 @@ namespace RF1.Controllers.Api
             return _mapper.Map<ProductDto>(product);
         }
 
-        // PUT: api/Products/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct(int id, ProductDto productDto)
+        public async Task<IActionResult> UpdateProduct(int id, ProductDto productDto)
         {
             if (id != productDto.Id)
             {
@@ -55,9 +54,18 @@ namespace RF1.Controllers.Api
             }
 
             if (!ModelState.IsValid)
+            {
                 return BadRequest(ModelState);
+            }
 
-            var productInDb = await _context.Products.FindAsync(id);
+            // Ensure that the FarmId provided is valid
+            var farmExists = await _context.Farms.AnyAsync(f => f.Id == productDto.FarmId);
+            if (!farmExists)
+            {
+                return BadRequest("Invalid farm ID");
+            }
+
+            var productInDb = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
             if (productInDb == null)
             {
                 return NotFound();
@@ -65,10 +73,25 @@ namespace RF1.Controllers.Api
 
             _mapper.Map(productDto, productInDb);
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ProductExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
-            return NoContent();
+            return Ok(productDto);
         }
+
 
         // POST: api/Products
         [HttpPost]
@@ -102,5 +125,10 @@ namespace RF1.Controllers.Api
 
             return NoContent();
         }
+        private bool ProductExists(int id)
+        {
+            return _context.Products.Any(e => e.Id == id);
+        }
+
     }
 }

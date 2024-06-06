@@ -1,4 +1,5 @@
-﻿using RF1.Models.Enums;
+﻿using RF1.Models;
+using RF1.Models.Enums;
 
 namespace RF1.Dtos
 {
@@ -12,6 +13,6 @@ namespace RF1.Dtos
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public double Rating { get; set; }
-        public List<ShortProductDto> Products { get; set; }
+        public List<ProductDto> Products { get; set; }
     }
 }

@@ -25,11 +25,11 @@ namespace RF1.Models
 
         [Display(Name = "Unit Of Measurement")]
         public UnitOfMeasurement UnitOfMeasurement { get; set; }
-        public int? Quantity { get; set; }
+        public int Quantity { get; set; }
 
         [Required]
         public double PricePerUnit { get; set; }
-        public double? DeliveryRadius { get; set; }
+        public double DeliveryRadius { get; set; }
 
         [Required]
         public int MinUnitOrder { get; set; }

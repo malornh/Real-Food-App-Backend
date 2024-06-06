@@ -71,13 +71,14 @@ namespace RF1.Controllers.Api
             return _mapper.Map<FarmDto>(farm);
         }
 
+        // Method to get farm with products
         [HttpGet("{farmId}/FarmWithProducts")]
-        public async Task<ActionResult<Dtos.FarmFullInfoDto>> GetFarmWithProducts(int farmId)
+        public async Task<ActionResult<FarmFullInfoDto>> GetFarmWithProducts(int farmId)
         {
             // Fetch farm products using LINQ query
             var farmProducts = await _context.Products
                 .Where(p => p.FarmId == farmId)
-                .Select(p => new Dtos.ShortProductDto
+                .Select(p => new ProductDto
                 {
                     Id = p.Id,
                     Name = p.Name,
@@ -85,14 +86,19 @@ namespace RF1.Controllers.Api
                     Type = p.Type,
                     PricePerUnit = p.PricePerUnit,
                     UnitOfMeasurement = p.UnitOfMeasurement,
-                    Image = p.Image
+                    Image = p.Image,
+                    FarmId = p.FarmId,
+                    Quantity = p.Quantity.HasValue ? p.Quantity.Value : 0, // Handle nullable Quantity
+                    DeliveryRadius = p.DeliveryRadius.HasValue ? p.DeliveryRadius.Value : 0, // Handle nullable DeliveryRadius
+                    MinUnitOrder = p.MinUnitOrder,
+                    DateUpdated = p.DateUpdated
                 })
                 .ToListAsync();
 
             // Fetch farm details
             var farmDetails = await _context.Farms
                 .Where(f => f.Id == farmId)
-                .Select(f => new Dtos.FarmFullInfoDto
+                .Select(f => new FarmFullInfoDto
                 {
                     Id = f.Id,
                     Image = f.Image,
