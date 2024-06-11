@@ -78,7 +78,11 @@ namespace RF1.Controllers
                         Type = o.Product.Type,
                         PricePerUnit = o.Product.PricePerUnit,
                         UnitOfMeasurement = o.Product.UnitOfMeasurement,
-                        Image = o.Product.Image
+                        Image = o.Product.Image,
+                        // Fetch average rating for the product
+                        Rating = _context.Ratings
+                            .Where(r => r.ProductId == o.Product.Id)
+                            .Average(r => r.RatingValue)
                     },
                     ShortFarm = new ShortFarmDto
                     {
@@ -114,6 +118,7 @@ namespace RF1.Controllers
 
             return Ok(shopDetails);
         }
+
 
         // PUT: api/Shops/5
         [HttpPut("{id}")]

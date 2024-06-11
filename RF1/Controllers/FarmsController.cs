@@ -91,7 +91,10 @@ namespace RF1.Controllers.Api
                     Quantity = p.Quantity.HasValue ? p.Quantity.Value : 0, // Handle nullable Quantity
                     DeliveryRadius = p.DeliveryRadius.HasValue ? p.DeliveryRadius.Value : 0, // Handle nullable DeliveryRadius
                     MinUnitOrder = p.MinUnitOrder,
-                    DateUpdated = p.DateUpdated
+                    DateUpdated = p.DateUpdated,
+                    Rating = _context.Ratings
+                            .Where(r => r.ProductId == p.Id)
+                            .Average(r => r.RatingValue)
                 })
                 .ToListAsync();
 

@@ -37,6 +37,8 @@ namespace RF1.Models
         [Display(Name = "Date Updated")]
         public DateOnly DateUpdated { get; set; }
 
+        public double? Rating { get; set; }
+
         public ProductDto()
         {
             DateUpdated = DateOnly.FromDateTime(DateTime.Now);
