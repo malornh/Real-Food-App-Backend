@@ -23,7 +23,7 @@ namespace RF1.Models
         public User User { get; set; }
 
         [Required]
-        public int RatingValue { get; set; }
+        public double RatingValue { get; set; }
 
         [Display(Name = "Date Rated")]
         public DateOnly DateRated { get; set; }
