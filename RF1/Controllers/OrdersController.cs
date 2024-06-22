@@ -45,6 +45,58 @@ namespace RF1.Controllers.Api
             return _mapper.Map<OrderDto>(order);
         }
 
+        [HttpGet("/{farmId}")]
+        public async Task<ActionResult<List<AllFarmOrdersDto>>> GetAllFarmOrdersByFarmId(int farmId)
+        {
+            var pendingOrders = await _context.Orders
+                                              .Where(o => o.Product.FarmId == farmId)
+                                              .Include(o => o.Product)
+                                              .ThenInclude(p => p.Farm)
+                                              .Include(o => o.Shop)
+                                              .ToListAsync();
+
+            if (pendingOrders == null || pendingOrders.Count == 0)
+            {
+                return NotFound();
+            }
+
+            var orderDtos = pendingOrders.Select(o => new AllFarmOrdersDto
+            {
+                Id = o.Id,
+                Status = o.Status,
+                Quantity = o.Quantity,
+                ShopPrice = o.ShopPrice,
+                DateOrdered = o.DateOrdered,
+                Product = new ProductDto
+                {
+                    Id = o.Product.Id,
+                    Name = o.Product.Name,
+                    Image = o.Product.Image,
+                    PricePerUnit = o.Product.PricePerUnit,
+                    Type = o.Product.Type,
+                },
+                Farm = new FarmDto
+                {
+                    Id = o.Product.Farm.Id,
+                    Name = o.Product.Farm.Name,
+                    Image = o.Product.Farm.Image,
+                    Latitude = o.Product.Farm.Latitude,
+                    Longitude = o.Product.Farm.Longitude,
+                },
+                Shop = new ShopDto
+                {
+                    Id = o.Shop.Id,
+                    Name = o.Shop.Name,
+                    Image = o.Shop.Image,
+                    Latitude = o.Product.Farm.Latitude,
+                    Longitude = o.Product.Farm.Longitude,
+                }
+            }).ToList();
+
+            return Ok(orderDtos);
+        }
+
+
         // POST: api/Orders
         [HttpPost]
         public IActionResult CreateOrder(OrderDto orderDto)

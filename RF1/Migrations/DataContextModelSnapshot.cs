@@ -195,7 +195,7 @@ namespace RF1.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Farms");
+                    b.ToTable("Farms", (string)null);
                 });
 
             modelBuilder.Entity("RF1.Models.Order", b =>
@@ -231,7 +231,7 @@ namespace RF1.Migrations
 
                     b.HasIndex("ShopId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("RF1.Models.Product", b =>
@@ -282,7 +282,7 @@ namespace RF1.Migrations
 
                     b.HasIndex("FarmId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("RF1.Models.Rating", b =>
@@ -312,7 +312,7 @@ namespace RF1.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Ratings");
+                    b.ToTable("Ratings", (string)null);
                 });
 
             modelBuilder.Entity("RF1.Models.Shop", b =>
@@ -352,7 +352,7 @@ namespace RF1.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Shops");
+                    b.ToTable("Shops", (string)null);
                 });
 
             modelBuilder.Entity("RF1.Models.User", b =>
