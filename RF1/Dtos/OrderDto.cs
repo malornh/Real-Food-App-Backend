@@ -23,9 +23,11 @@ namespace RF1.Models
 
         [Display(Name = "Date Ordered")]
         public DateOnly DateOrdered { get; set; }
+        public bool SoldOut { get; set; }
 
         public OrderDto()
         {
+            SoldOut = false;
             DateOrdered = DateOnly.FromDateTime(DateTime.Now);
         }
     }

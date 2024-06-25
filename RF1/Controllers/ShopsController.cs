@@ -70,6 +70,7 @@ namespace RF1.Controllers
                     Id = o.Id,
                     Quantity = o.Quantity,
                     ShopPrice = o.ShopPrice, // Assuming this is the shop's price for the product
+                    SoldOut = o.SoldOut,
                     Product = new ShortProductDto
                     {
                         Id = o.Product.Id,

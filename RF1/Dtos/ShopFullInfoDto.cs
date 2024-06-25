@@ -20,6 +20,7 @@ namespace RF1.Dtos
         public int Id { get; set; }
         public int Quantity { get; set; }
         public double? ShopPrice { get; set; }
+        public bool SoldOut { get; set; }
         public ShortProductDto Product { get; set; }
 
         public ShortFarmDto ShortFarm { get; set; }

@@ -45,7 +45,7 @@ namespace RF1.Controllers.Api
             return _mapper.Map<OrderDto>(order);
         }
 
-        [HttpGet("/{farmId}")]
+        [HttpGet("AllFarmOrders/{farmId}")]
         public async Task<ActionResult<List<AllFarmOrdersDto>>> GetAllFarmOrdersByFarmId(int farmId)
         {
             var pendingOrders = await _context.Orders
