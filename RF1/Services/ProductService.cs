@@ -51,18 +51,6 @@ namespace RF1.Services
                 return false;
             }
 
-            if (!ModelState.IsValid)
-            {
-                return false;
-            }
-
-            // Ensure that the FarmId provided is valid
-            var farmExists = await _context.Farms.AnyAsync(f => f.Id == productDto.FarmId);
-            if (!farmExists)
-            {
-                return false;
-            }
-
             var productInDb = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
             if (productInDb == null)
             {
@@ -102,6 +90,11 @@ namespace RF1.Services
             await _context.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task<bool> ValidateFarmId(int farmId)
+        {
+            return await _context.Farms.AnyAsync(f => f.Id == farmId);
         }
 
         private bool ProductExists(int id)

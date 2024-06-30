@@ -53,14 +53,32 @@ namespace RF1.Controllers.Api
 
         // PUT: api/Products/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, ProductDto productDto)
+        public async Task<IActionResult> PutProduct(int id, ProductDto productDto)
         {
+            if (id != productDto.Id)
+            {
+                return BadRequest("Mismatched IDs");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Ensure that the FarmId provided is valid
+            var farmExists = await _productsService.ValidateFarmId(productDto.FarmId);
+            if (!farmExists)
+            {
+                return BadRequest("Farm ID is not valid");
+            }
+
             var result = await _productsService.UpdateProduct(id, productDto);
             if (!result)
             {
                 return NotFound();
             }
-            return Ok(productDto);
+
+            return NoContent();
         }
 
         // DELETE: api/Products/5
