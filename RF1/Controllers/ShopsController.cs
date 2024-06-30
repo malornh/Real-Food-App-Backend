@@ -66,6 +66,11 @@ namespace RF1.Controllers.Api
         [HttpPost]
         public async Task<ActionResult<ShopDto>> PostShop(ShopDto shopDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var createdShop = await _shopsService.CreateShop(shopDto);
             return CreatedAtAction(nameof(GetShop), new { id = createdShop.Id }, createdShop);
         }
@@ -74,6 +79,16 @@ namespace RF1.Controllers.Api
         [HttpPut("{id}")]
         public async Task<IActionResult> PutShop(int id, ShopDto shopDto)
         {
+            if (id != shopDto.Id)
+            {
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var result = await _shopsService.UpdateShop(id, shopDto);
             if (!result)
             {

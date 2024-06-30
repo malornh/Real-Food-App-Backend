@@ -51,11 +51,6 @@ namespace RF1.Services
                 return false;
             }
 
-            if (!ModelState.IsValid)
-            {
-                return false;
-            }
-
             var ratingInDb = await _context.Ratings.FirstOrDefaultAsync(r => r.Id == id);
             if (ratingInDb == null)
             {
