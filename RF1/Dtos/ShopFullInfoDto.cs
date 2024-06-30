@@ -1,4 +1,5 @@
 ﻿using RF1.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace RF1.Dtos
 {
@@ -21,6 +22,13 @@ namespace RF1.Dtos
         public int Quantity { get; set; }
         public double? ShopPrice { get; set; }
         public bool SoldOut { get; set; }
+        public string Status { get; set; }
+
+        [Required]
+        public int? ShopId { get; set; }
+
+        [Required]
+        public int ProductId {  get; set; }
         public ShortProductDto Product { get; set; }
 
         public ShortFarmDto ShortFarm { get; set; }
