@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using RF1.Data;
-using RF1.Models;
 using RF1.Dtos;
-using AutoMapper;
+using RF1.Models;
+using RF1.Services;
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Http.Extensions;
+using System.Threading.Tasks;
 
 namespace RF1.Controllers.Api
 {
@@ -14,94 +11,67 @@ namespace RF1.Controllers.Api
     [ApiController]
     public class RatingsController : ControllerBase
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
+        private readonly IRatingsService _ratingsService;
 
-        public RatingsController(DataContext context, IMapper mapper)
+        public RatingsController(IRatingsService ratingsService)
         {
-            _context = context;
-            _mapper = mapper;
+            _ratingsService = ratingsService;
         }
 
         // GET: api/Ratings
         [HttpGet]
-        public IEnumerable<RatingDto> GetRatings()
+        public async Task<ActionResult<IEnumerable<RatingDto>>> GetRatings()
         {
-            var ratings = _context.Ratings.ToList();
-            return _mapper.Map<List<RatingDto>>(ratings);
+            var ratings = await _ratingsService.GetRatings();
+            return Ok(ratings);
         }
 
         // GET: api/Ratings/5
         [HttpGet("{id}")]
-        public ActionResult<RatingDto> GetRating(int id)
+        public async Task<ActionResult<RatingDto>> GetRating(int id)
         {
-            var rating = _context.Ratings.FirstOrDefault(r => r.Id == id);
+            var rating = await _ratingsService.GetRating(id);
             if (rating == null)
             {
                 return NotFound();
             }
-            return Ok(_mapper.Map<RatingDto>(rating));
+            return Ok(rating);
         }
 
         // POST: api/Ratings
         [HttpPost]
-        public IActionResult CreateRating(RatingDto ratingDto)
+        public async Task<ActionResult<RatingDto>> CreateRating(RatingDto ratingDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var rating = _mapper.Map<Rating>(ratingDto);
-
-            _context.Ratings.Add(rating);
-            _context.SaveChanges();
-
-            ratingDto.Id = rating.Id;
-
-            return Created(new Uri(Request.GetDisplayUrl() + "/" + ratingDto.Id), ratingDto);
+            var createdRating = await _ratingsService.CreateRating(ratingDto);
+            return CreatedAtAction(nameof(GetRating), new { id = createdRating.Id }, createdRating);
         }
 
         // PUT: api/Ratings/5
         [HttpPut("{id}")]
-        public IActionResult UpdateRating(int id, RatingDto ratingDto)
+        public async Task<IActionResult> UpdateRating(int id, RatingDto ratingDto)
         {
-            if (id != ratingDto.Id)
-            {
-                return BadRequest();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var ratingInDb = _context.Ratings.FirstOrDefault(r => r.Id == id);
-            if (ratingInDb == null)
+            var result = await _ratingsService.UpdateRating(id, ratingDto);
+            if (!result)
             {
                 return NotFound();
             }
-
-            _mapper.Map(ratingDto, ratingInDb);
-
-            _context.SaveChanges();
-
             return Ok(ratingDto);
         }
 
         // DELETE: api/Ratings/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteRating(int id)
+        public async Task<IActionResult> DeleteRating(int id)
         {
-            var ratingInDb = _context.Ratings.FirstOrDefault(r => r.Id == id);
-            if (ratingInDb == null)
+            var result = await _ratingsService.DeleteRating(id);
+            if (!result)
             {
                 return NotFound();
             }
-
-            _context.Ratings.Remove(ratingInDb);
-            _context.SaveChanges();
-
             return NoContent();
         }
     }
