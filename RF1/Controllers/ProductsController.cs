@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using RF1.Data;
-using RF1.Models;
 using RF1.Dtos;
-using AutoMapper;
+using RF1.Models;
+using RF1.Services;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace RF1.Controllers.Api
@@ -14,121 +11,68 @@ namespace RF1.Controllers.Api
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
+        private readonly IProductsService _productsService;
 
-        public ProductsController(DataContext context, IMapper mapper)
+        public ProductsController(IProductsService productsService)
         {
-            _context = context;
-            _mapper = mapper;
+            _productsService = productsService;
         }
 
         // GET: api/Products
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
         {
-            var products = await _context.Products.ToListAsync();
-            return _mapper.Map<List<ProductDto>>(products);
+            var products = await _productsService.GetProducts();
+            return Ok(products);
         }
 
         // GET: api/Products/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductDto>> GetProduct(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-
+            var product = await _productsService.GetProduct(id);
             if (product == null)
             {
                 return NotFound();
             }
-
-            return _mapper.Map<ProductDto>(product);
+            return Ok(product);
         }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, ProductDto productDto)
-        {
-            if (id != productDto.Id)
-            {
-                return BadRequest();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            // Ensure that the FarmId provided is valid
-            var farmExists = await _context.Farms.AnyAsync(f => f.Id == productDto.FarmId);
-            if (!farmExists)
-            {
-                return BadRequest("Invalid farm ID");
-            }
-
-            var productInDb = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
-            if (productInDb == null)
-            {
-                return NotFound();
-            }
-
-            _mapper.Map(productDto, productInDb);
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return Ok(productDto);
-        }
-
 
         // POST: api/Products
         [HttpPost]
         public async Task<ActionResult<ProductDto>> PostProduct(ProductDto productDto)
         {
             if (!ModelState.IsValid)
+            {
                 return BadRequest(ModelState);
+            }
 
-            var product = _mapper.Map<Product>(productDto);
+            var createdProduct = await _productsService.CreateProduct(productDto);
+            return CreatedAtAction(nameof(GetProduct), new { id = createdProduct.Id }, createdProduct);
+        }
 
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-
-            productDto.Id = product.Id;
-
-            return CreatedAtAction("GetProduct", new { id = productDto.Id }, productDto);
+        // PUT: api/Products/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct(int id, ProductDto productDto)
+        {
+            var result = await _productsService.UpdateProduct(id, productDto);
+            if (!result)
+            {
+                return NotFound();
+            }
+            return Ok(productDto);
         }
 
         // DELETE: api/Products/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
+            var result = await _productsService.DeleteProduct(id);
+            if (!result)
             {
                 return NotFound();
             }
-
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-
             return NoContent();
         }
-        private bool ProductExists(int id)
-        {
-            return _context.Products.Any(e => e.Id == id);
-        }
-
     }
 }
