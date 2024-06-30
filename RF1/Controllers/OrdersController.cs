@@ -1,13 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using RF1.Data;
-using RF1.Models;
 using RF1.Dtos;
-using AutoMapper;
+using RF1.Models;
+using RF1.Services;
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Http.Extensions;
-using System;
 using System.Threading.Tasks;
 
 namespace RF1.Controllers.Api
@@ -16,142 +11,79 @@ namespace RF1.Controllers.Api
     [ApiController]
     public class OrdersController : ControllerBase
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
+        private readonly IOrdersService _ordersService;
 
-        public OrdersController(DataContext context, IMapper mapper)
+        public OrdersController(IOrdersService ordersService)
         {
-            _context = context;
-            _mapper = mapper;
+            _ordersService = ordersService;
         }
 
         // GET: api/Orders
         [HttpGet]
-        public IEnumerable<OrderDto> GetOrders()
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders()
         {
-            var orders = _context.Orders.ToList();
-            return _mapper.Map<List<OrderDto>>(orders);
+            var orders = await _ordersService.GetOrders();
+            return Ok(orders);
         }
 
         // GET: api/Orders/5
         [HttpGet("{id}")]
-        public ActionResult<OrderDto> GetOrder(int id)
+        public async Task<ActionResult<OrderDto>> GetOrder(int id)
         {
-            var order = _context.Orders.FirstOrDefault(o => o.Id == id);
+            var order = await _ordersService.GetOrder(id);
             if (order == null)
             {
                 return NotFound();
             }
-            return _mapper.Map<OrderDto>(order);
+            return Ok(order);
         }
 
+        // GET: api/Orders/AllFarmOrders/{farmId}
         [HttpGet("AllFarmOrders/{farmId}")]
         public async Task<ActionResult<List<AllFarmOrdersDto>>> GetAllFarmOrdersByFarmId(int farmId)
         {
-            var pendingOrders = await _context.Orders
-                                              .Where(o => o.Product.FarmId == farmId)
-                                              .Include(o => o.Product)
-                                              .ThenInclude(p => p.Farm)
-                                              .Include(o => o.Shop)
-                                              .ToListAsync();
-
-            if (pendingOrders == null || pendingOrders.Count == 0)
+            var farmOrders = await _ordersService.GetAllFarmOrdersByFarmId(farmId);
+            if (farmOrders == null || farmOrders.Count == 0)
             {
                 return NotFound();
             }
-
-            var orderDtos = pendingOrders.Select(o => new AllFarmOrdersDto
-            {
-                Id = o.Id,
-                Status = o.Status,
-                Quantity = o.Quantity,
-                ShopPrice = o.ShopPrice,
-                DateOrdered = o.DateOrdered,
-                Product = new ProductDto
-                {
-                    Id = o.Product.Id,
-                    Name = o.Product.Name,
-                    Image = o.Product.Image,
-                    PricePerUnit = o.Product.PricePerUnit,
-                    Type = o.Product.Type,
-                },
-                Farm = new FarmDto
-                {
-                    Id = o.Product.Farm.Id,
-                    Name = o.Product.Farm.Name,
-                    Image = o.Product.Farm.Image,
-                    Latitude = o.Product.Farm.Latitude,
-                    Longitude = o.Product.Farm.Longitude,
-                },
-                Shop = new ShopDto
-                {
-                    Id = o.Shop.Id,
-                    Name = o.Shop.Name,
-                    Image = o.Shop.Image,
-                    Latitude = o.Product.Farm.Latitude,
-                    Longitude = o.Product.Farm.Longitude,
-                }
-            }).ToList();
-
-            return Ok(orderDtos);
+            return Ok(farmOrders);
         }
-
 
         // POST: api/Orders
         [HttpPost]
-        public IActionResult CreateOrder(OrderDto orderDto)
+        public async Task<ActionResult<OrderDto>> CreateOrder(OrderDto orderDto)
         {
             if (!ModelState.IsValid)
+            {
                 return BadRequest(ModelState);
+            }
 
-            var order = _mapper.Map<Order>(orderDto);
-
-            _context.Orders.Add(order);
-            _context.SaveChanges();
-
-            orderDto.Id = order.Id;
-
-            return Created(new Uri(Request.GetDisplayUrl() + "/" + orderDto.Id), orderDto);
+            var createdOrder = await _ordersService.CreateOrder(orderDto);
+            return CreatedAtAction(nameof(GetOrder), new { id = createdOrder.Id }, createdOrder);
         }
 
         // PUT: api/Orders/5
         [HttpPut("{id}")]
-        public IActionResult UpdateOrder(int id, OrderDto orderDto)
+        public async Task<IActionResult> UpdateOrder(int id, OrderDto orderDto)
         {
-            if (id != orderDto.Id)
-            {
-                return BadRequest();
-            }
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var orderInDb = _context.Orders.FirstOrDefault(o => o.Id == id);
-            if (orderInDb == null)
+            var result = await _ordersService.UpdateOrder(id, orderDto);
+            if (!result)
             {
                 return NotFound();
             }
-
-            _mapper.Map(orderDto, orderInDb);
-
-            _context.SaveChanges();
-
             return Ok(orderDto);
         }
 
         // DELETE: api/Orders/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteOrder(int id)
+        public async Task<IActionResult> DeleteOrder(int id)
         {
-            var orderInDb = _context.Orders.FirstOrDefault(o => o.Id == id);
-            if (orderInDb == null)
+            var result = await _ordersService.DeleteOrder(id);
+            if (!result)
             {
                 return NotFound();
             }
-
-            _context.Orders.Remove(orderInDb);
-            _context.SaveChanges();
-
             return NoContent();
         }
     }
