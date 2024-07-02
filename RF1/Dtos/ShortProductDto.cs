@@ -12,5 +12,6 @@ namespace RF1.Dtos
         public UnitOfMeasurement UnitOfMeasurement { get; set; }
         public string Image { get; set; }
         public double? Rating { get; set; }
+        public DateOnly DateUpdated { get; set; }
     }
 }

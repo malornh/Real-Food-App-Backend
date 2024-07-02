@@ -65,7 +65,9 @@ namespace RF1.Services
                         Image = o.Product.Image,
                         Rating = _context.Ratings
                             .Where(r => r.ProductId == o.Product.Id)
-                            .Average(r => (double?)r.RatingValue) ?? 0 // Handle null with default value
+                            .Average(r => (double?)r.RatingValue) ?? 0,
+                        DateUpdated = o.Product.DateUpdated
+
                     },
                     ShortFarm = new ShortFarmDto
                     {
