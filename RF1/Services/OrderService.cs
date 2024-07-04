@@ -77,6 +77,52 @@ namespace RF1.Services
             return orderDtos;
         }
 
+        public async Task<List<AllShopOrdersDto>> GetAllShopOrdersByShopId(int shopId)
+        {
+            var pendingOrders = await _context.Orders
+                                              .Where(o => o.ShopId == shopId)
+                                              .Include(o => o.Product)
+                                              .ThenInclude(p => p.Farm)
+                                              .Include(o => o.Shop)
+                                              .ToListAsync();
+
+            var orderDtos = pendingOrders.Select(o => new AllShopOrdersDto
+            {
+                Id = o.Id,
+                Status = o.Status,
+                Quantity = o.Quantity,
+                ShopPrice = o.ShopPrice,
+                DateOrdered = o.DateOrdered,
+                Product = new ProductDto
+                {
+                    Id = o.Product.Id,
+                    Name = o.Product.Name,
+                    Image = o.Product.Image,
+                    PricePerUnit = o.Product.PricePerUnit,
+                    Type = o.Product.Type,
+                },
+                Farm = new FarmDto
+                {
+                    Id = o.Product.Farm.Id,
+                    Name = o.Product.Farm.Name,
+                    Image = o.Product.Farm.Image,
+                    Latitude = o.Product.Farm.Latitude,
+                    Longitude = o.Product.Farm.Longitude,
+                },
+                Shop = new ShopDto
+                {
+                    Id = o.Shop.Id,
+                    Name = o.Shop.Name,
+                    Image = o.Shop.Image,
+                    Latitude = o.Shop.Latitude,
+                    Longitude = o.Shop.Longitude,
+                }
+            }).ToList();
+
+            return orderDtos;
+        }
+
+
         public async Task<OrderDto> CreateOrder(OrderDto orderDto)
         {
             var order = _mapper.Map<Order>(orderDto);

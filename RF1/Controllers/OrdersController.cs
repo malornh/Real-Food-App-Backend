@@ -50,6 +50,19 @@ namespace RF1.Controllers.Api
             return Ok(farmOrders);
         }
 
+        // GET: api/Orders/AllShopOrders/{shopId}
+        [HttpGet("AllShopOrders/{shopId}")]
+        public async Task<ActionResult<List<AllShopOrdersDto>>> GetAllShopOrdersByShopId(int shopId)
+        {
+            var shopOrders = await _ordersService.GetAllShopOrdersByShopId(shopId);
+            if (shopOrders == null || shopOrders.Count == 0)
+            {
+                return NotFound();
+            }
+            return Ok(shopOrders);
+        }
+
+
         // POST: api/Orders
         [HttpPost]
         public async Task<ActionResult<OrderDto>> CreateOrder(OrderDto orderDto)

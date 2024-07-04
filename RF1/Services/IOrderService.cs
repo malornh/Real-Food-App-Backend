@@ -10,6 +10,7 @@ namespace RF1.Services
         Task<IEnumerable<OrderDto>> GetOrders();
         Task<OrderDto> GetOrder(int id);
         Task<List<AllFarmOrdersDto>> GetAllFarmOrdersByFarmId(int farmId);
+        Task<List<AllShopOrdersDto>> GetAllShopOrdersByShopId(int shopId);
         Task<OrderDto> CreateOrder(OrderDto orderDto);
         Task<bool> UpdateOrder(int id, OrderDto orderDto);
         Task<bool> DeleteOrder(int id);
