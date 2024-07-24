@@ -31,6 +31,11 @@ namespace RF1.Services
             var cart = await _context.Carts.FirstOrDefaultAsync(c => c.Id == id);
             return _mapper.Map<CartDto>(cart);
         }
+        public async Task<IEnumerable<CartDto>> GetCartsByUserId(string userId)
+        {
+            var carts = await _context.Carts.Where(c => c.UserId == userId).ToListAsync();
+            return _mapper.Map<List<CartDto>>(carts);
+        }
 
         public async Task<CartDto> CreateCart(CartDto cartDto)
         {

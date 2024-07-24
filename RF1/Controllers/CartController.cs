@@ -38,6 +38,14 @@ namespace RF1.Controllers.Api
             return Ok(cart);
         }
 
+        // GET: api/Cart/User/{userId}
+        [HttpGet("User/{userId}")]
+        public async Task<ActionResult<IEnumerable<CartDto>>> GetCartsByUserId(string userId)
+        {
+            var carts = await _cartService.GetCartsByUserId(userId);
+            return Ok(carts);
+        }
+
         // POST: api/Cart
         [HttpPost]
         public async Task<ActionResult<CartDto>> CreateCart(CartDto cartDto)
