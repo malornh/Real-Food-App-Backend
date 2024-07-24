@@ -16,5 +16,6 @@ namespace RF1.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Rating> Ratings { get; set; }
+        public DbSet<Cart> Carts { get; set; }
     }
 }

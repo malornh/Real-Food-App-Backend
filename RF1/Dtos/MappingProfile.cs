@@ -23,6 +23,9 @@ namespace RF1.Dtos
 
             //CreateMap<Rating, RatingDto>();
             CreateMap<RatingDto, Rating>();
+
+            CreateMap<Cart, CartDto>();
+            CreateMap<CartDto, Cart>();
         }
     }
 }

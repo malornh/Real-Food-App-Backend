@@ -25,6 +25,7 @@ builder.Services.AddScoped<IFarmsService, FarmsService>();
 builder.Services.AddScoped<IOrdersService, OrdersService>();
 builder.Services.AddScoped<IProductsService, ProductsService>();
 builder.Services.AddScoped<IRatingsService, RatingsService>();
+builder.Services.AddScoped<ICartsService, CartsService>();
 
 // Add CORS policy
 builder.Services.AddCors(options =>
