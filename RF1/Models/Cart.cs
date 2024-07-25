@@ -17,5 +17,11 @@ namespace RF1.Models
 
         [ForeignKey("ProductId")]
         public Product Product { get; set; }
+
+        [Required]
+        public int ShopId { get; set; }
+
+        [ForeignKey("ShopId")]
+        public Shop Shop { get; set; }
     }
 }

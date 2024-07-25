@@ -22,13 +22,19 @@ namespace RF1.Services
 
         public async Task<IEnumerable<CartDto>> GetCarts()
         {
-            var carts = await _context.Carts.ToListAsync();
+            var carts = await _context.Carts
+                                      .Include(c => c.Product)
+                                      .Include(c => c.Shop)
+                                      .ToListAsync();
             return _mapper.Map<List<CartDto>>(carts);
         }
 
         public async Task<CartDto> GetCart(int id)
         {
-            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.Id == id);
+            var cart = await _context.Carts
+                                     .Include(c => c.Product)
+                                     .Include(c => c.Shop)
+                                     .FirstOrDefaultAsync(c => c.Id == id);
             return _mapper.Map<CartDto>(cart);
         }
 
@@ -36,6 +42,7 @@ namespace RF1.Services
         {
             var carts = await _context.Carts
                                       .Include(c => c.Product)
+                                      .Include(c => c.Shop)
                                       .Where(c => c.UserId == userId)
                                       .ToListAsync();
             return _mapper.Map<List<CartDto>>(carts);
@@ -57,7 +64,10 @@ namespace RF1.Services
                 return false;
             }
 
-            var cartInDb = await _context.Carts.FirstOrDefaultAsync(c => c.Id == id);
+            var cartInDb = await _context.Carts
+                                         .Include(c => c.Product)
+                                         .Include(c => c.Shop)
+                                         .FirstOrDefaultAsync(c => c.Id == id);
             if (cartInDb == null)
             {
                 return false;
@@ -71,7 +81,10 @@ namespace RF1.Services
 
         public async Task<bool> DeleteCart(int id)
         {
-            var cartInDb = await _context.Carts.FirstOrDefaultAsync(c => c.Id == id);
+            var cartInDb = await _context.Carts
+                                         .Include(c => c.Product)
+                                         .Include(c => c.Shop)
+                                         .FirstOrDefaultAsync(c => c.Id == id);
             if (cartInDb == null)
             {
                 return false;
