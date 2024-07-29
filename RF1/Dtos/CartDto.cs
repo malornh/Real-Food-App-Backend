@@ -7,6 +7,6 @@ namespace RF1.Dtos
         public int Id { get; set; }
         public string UserId { get; set; }
         public ProductDto Product { get; set; }
-        public Shop Shop { get; set; }
+        public ShopDto Shop { get; set; }
     }
 }

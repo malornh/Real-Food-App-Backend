@@ -13,11 +13,15 @@ namespace RF1.Services
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
+        private readonly IProductsService _productService;
+        private readonly IShopsService _shopService;
 
-        public CartsService(DataContext context, IMapper mapper)
+        public CartsService(DataContext context, IMapper mapper, IProductsService productService, IShopsService shopService)
         {
             _context = context;
             _mapper = mapper;
+            _productService = productService;
+            _shopService = shopService;
         }
 
         public async Task<IEnumerable<CartDto>> GetCarts()
@@ -54,6 +58,38 @@ namespace RF1.Services
             _context.Carts.Add(cart);
             await _context.SaveChangesAsync();
             cartDto.Id = cart.Id;
+            return cartDto;
+        }
+
+        public async Task<CartDto> CreateCart(int productId, int shopId, string userId)
+        {
+            // Fetch the product and shop to avoid multiple instances
+            var product = await _context.Products.FindAsync(productId);
+            if (product == null)
+            {
+                return null; // or handle not found
+            }
+
+            var shop = await _context.Shops.FindAsync(shopId);
+            if (shop == null)
+            {
+                return null; // or handle not found
+            }
+
+            // Create a new Cart instance and attach existing entities
+            var cart = new Cart
+            {
+                UserId = userId,
+                Product = product,
+                Shop = shop
+            };
+
+            // Add the new cart instance to the context
+            _context.Carts.Add(cart);
+            await _context.SaveChangesAsync();
+
+            // Map the created cart back to DTO
+            var cartDto = _mapper.Map<CartDto>(cart);
             return cartDto;
         }
 

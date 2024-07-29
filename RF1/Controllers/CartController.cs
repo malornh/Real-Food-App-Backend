@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using RF1.Dtos;
+using RF1.Models;
 using RF1.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,10 +13,14 @@ namespace RF1.Controllers.Api
     public class CartController : ControllerBase
     {
         private readonly ICartsService _cartService;
+        private readonly IProductsService _productService;
+        private readonly IShopsService _shopService;
 
-        public CartController(ICartsService cartService)
+        public CartController(ICartsService cartService, IProductsService productService, IShopsService shopService)
         {
             _cartService = cartService;
+            _productService = productService;
+            _shopService = shopService;
         }
 
         // GET: api/Cart
@@ -48,14 +53,19 @@ namespace RF1.Controllers.Api
 
         // POST: api/Cart
         [HttpPost]
-        public async Task<ActionResult<CartDto>> CreateCart(CartDto cartDto)
+        public async Task<ActionResult<CartDto>> CreateCart(int productId, int shopId, string userId)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var createdCart = await _cartService.CreateCart(cartDto);
+            var createdCart = await _cartService.CreateCart(productId, shopId, userId);
+            if (createdCart == null)
+            {
+                return NotFound();
+            }
+
             return CreatedAtAction(nameof(GetCart), new { id = createdCart.Id }, createdCart);
         }
 
