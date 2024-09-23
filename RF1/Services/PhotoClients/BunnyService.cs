@@ -1,4 +1,5 @@
-﻿using RF1.Services.PhotoClients;
+﻿using Microsoft.AspNetCore.Mvc;
+using RF1.Services.PhotoClients;
 using System;
 using System.IO;
 using System.Net.Http;
@@ -33,7 +34,7 @@ public class BunnyService : IPhotoService
         }
     }
 
-    public async Task<byte[]> ReadPhotoAsync(string fileName)
+    public async Task<IActionResult> ReadPhotoAsync(string fileName)
     {
         var url = $"{storageUrl}/{fileName}";
         _httpClient.DefaultRequestHeaders.Add("AccessKey", apiKey);
@@ -41,7 +42,13 @@ public class BunnyService : IPhotoService
         var response = await _httpClient.GetAsync(url);
         response.EnsureSuccessStatusCode();
 
-        return await response.Content.ReadAsByteArrayAsync();
+        var imageData = await response.Content.ReadAsByteArrayAsync();
+        var contentType = GetContentType(fileName);
+
+        return new FileContentResult(imageData, contentType)
+        {
+            FileDownloadName = fileName
+        };
     }
 
     public async Task DeletePhotoAsync(string fileName)
@@ -51,5 +58,22 @@ public class BunnyService : IPhotoService
 
         var response = await _httpClient.DeleteAsync(url);
         response.EnsureSuccessStatusCode();
+    }
+
+    private string GetContentType(string fileName)
+    {
+        var extension = Path.GetExtension(fileName).ToLowerInvariant();
+
+        return extension switch
+        {
+            ".jpg" => "image/jpeg",
+            ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".gif" => "image/gif",
+            ".bmp" => "image/bmp",
+            ".tiff" => "image/tiff",
+            ".webp" => "image/webp",
+            _ => "application/octet-stream" // Fallback for unknown formats
+        };
     }
 }

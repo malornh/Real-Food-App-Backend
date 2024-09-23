@@ -27,7 +27,7 @@ namespace RF1.Controllers.Api
         }
 
         [HttpGet("read/{fileName}")]
-        public async Task<byte[]> DownloadImage(string fileName)
+        public async Task<IActionResult> DownloadImage(string fileName)
         {
             try
             {
