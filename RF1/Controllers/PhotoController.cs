@@ -47,18 +47,18 @@ namespace RF1.Controllers.Api
             }
         }
 
-        [HttpGet("delete/{fileName}")]
+        [HttpDelete("delete/{fileName}")]
         public async Task<IActionResult> DeleteImage(string fileName)
         {
             try
             {
-                var photo = await _photoService.ReadPhotoAsync(fileName);
+                await _photoService.DeletePhotoAsync(fileName);
 
-                return photo;
+                return Ok();
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Error uploading image: {ex.Message}", ex);
+                throw new InvalidOperationException($"Error deleting image: {ex.Message}", ex);
             }
         }
     }
