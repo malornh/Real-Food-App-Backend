@@ -5,6 +5,7 @@ using Microsoft.Identity.Web;
 using RF1.Data;
 using RF1.Models;
 using RF1.Services;
+using RF1.Services.PhotoClients;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,7 @@ builder.Services.AddScoped<IOrdersService, OrdersService>();
 builder.Services.AddScoped<IProductsService, ProductsService>();
 builder.Services.AddScoped<IRatingsService, RatingsService>();
 builder.Services.AddScoped<ICartsService, CartsService>();
+builder.Services.AddHttpClient<IPhotoService, BunnyService>();
 
 // Add CORS policy
 builder.Services.AddCors(options =>

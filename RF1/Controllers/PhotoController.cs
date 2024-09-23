@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RF1.Services.PhotoClients;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -7,17 +8,22 @@ namespace RF1.Controllers.Api
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class BunnyController : ControllerBase
+    public class PhotoController : ControllerBase
     {
         private static readonly HttpClient _httpClient = new HttpClient();
-        private readonly BunnyService _bunnyNetClient = new BunnyService(_httpClient);
+        private readonly IPhotoService _photoService;
+
+        public PhotoController(IPhotoService photoService)
+        {
+            _photoService = photoService;
+        }
 
         [HttpPost("upload")]
         public async Task<IActionResult> UploadPhoto(IFormFile photo)
         {
             try
             {
-                await _bunnyNetClient.UploadPhotoAsync(photo);
+                await _photoService.UploadPhotoAsync(photo);
                 return Ok(new { message = "Image uploaded successfully!"});
             }
             catch (HttpRequestException ex)
@@ -31,7 +37,22 @@ namespace RF1.Controllers.Api
         {
             try
             {
-                var photo = await _bunnyNetClient.ReadPhotoAsync(fileName);
+                var photo = await _photoService.ReadPhotoAsync(fileName);
+
+                return photo;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Error uploading image: {ex.Message}", ex);
+            }
+        }
+
+        [HttpGet("delete/{fileName}")]
+        public async Task<IActionResult> DeleteImage(string fileName)
+        {
+            try
+            {
+                var photo = await _photoService.ReadPhotoAsync(fileName);
 
                 return photo;
             }

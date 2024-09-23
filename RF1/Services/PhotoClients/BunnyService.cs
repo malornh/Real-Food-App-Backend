@@ -73,7 +73,7 @@ public class BunnyService : IPhotoService
             ".bmp" => "image/bmp",
             ".tiff" => "image/tiff",
             ".webp" => "image/webp",
-            _ => "application/octet-stream" // Fallback for unknown formats
+            _ => "application/octet-stream"
         };
     }
 }
