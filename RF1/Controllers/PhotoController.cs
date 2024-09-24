@@ -23,7 +23,7 @@ namespace RF1.Controllers.Api
         {
             try
             {
-                await _photoService.UploadPhotoAsync(photo, userId);
+                var photoId = await _photoService.StorePhotoAsync(photo, userId);
                 return Ok(new { message = "Image uploaded successfully!"});
             }
             catch (HttpRequestException ex)

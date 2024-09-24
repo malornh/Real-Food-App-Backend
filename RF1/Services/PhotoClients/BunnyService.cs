@@ -21,7 +21,7 @@ public class BunnyService : IPhotoService
         _photoLinkService = photoLinkService;
     }
 
-    public async Task UploadPhotoAsync(IFormFile photo, string userId)
+    public async Task<string> StorePhotoAsync(IFormFile photo, string userId)
     {
         if (photo == null || photo.Length == 0)
         {
@@ -41,10 +41,12 @@ public class BunnyService : IPhotoService
                 UserId = userId
             };
 
-            var createdPhotoLink = await _photoLinkService.CreatePhotoLink(photoLink);
+            // Store in db
+            var createdPhotoLink = await _photoLinkService.CreatePhotoLinkAsync(photoLink);
 
-            var response = await _httpClient.PutAsync($"{storageUrl}/{createdPhotoLink.Id}{photoExtension}", content); // THAT MUST BE THE USER'S PHOTO ID FROM DB
-            response.EnsureSuccessStatusCode();
+            // Store in cloud
+            var response = await _httpClient.PutAsync($"{storageUrl}/{photoLink.Id}", content);
+            return photoLink.Id;
         }
     }
 
@@ -70,6 +72,13 @@ public class BunnyService : IPhotoService
         var url = $"{storageUrl}/{fileName}";
         _httpClient.DefaultRequestHeaders.Add("AccessKey", apiKey);
 
+        // TO-DO: We must delete from db, delete from cloud and then we dont get any errors _context.SaveChanges(); 
+        // Same for Storing Photos
+
+        // Delete from db
+        await _photoLinkService.DeletePhotoLinkAsync(fileName); 
+
+        // Delete from cloud
         var response = await _httpClient.DeleteAsync(url);
         response.EnsureSuccessStatusCode();
     }

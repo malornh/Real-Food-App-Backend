@@ -5,8 +5,8 @@ namespace RF1.Services
     public interface IPhotoLinkService
     {
         IQueryable GetUserPhotoLinks(string userId);
-        Task<PhotoLink> CreatePhotoLink(PhotoLink photoLink);
+        Task<PhotoLink> CreatePhotoLinkAsync(PhotoLink photoLink);
         //Task<int> UpdatePhotoLink(string userId);
-        //Task DeletePhotoLink(int photoId);
+        Task DeletePhotoLinkAsync(string photoId);
     }
 }
