@@ -28,6 +28,7 @@ builder.Services.AddScoped<IProductsService, ProductsService>();
 builder.Services.AddScoped<IRatingsService, RatingsService>();
 builder.Services.AddScoped<ICartsService, CartsService>();
 builder.Services.AddHttpClient<IPhotoService, BunnyService>();
+builder.Services.AddScoped<IPhotoLinkService, PhotoLinkService>();
 
 // Add CORS policy
 builder.Services.AddCors(options =>
@@ -68,5 +69,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-// Dummy

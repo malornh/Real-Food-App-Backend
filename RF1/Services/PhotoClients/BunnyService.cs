@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using RF1.Models;
+using RF1.Services;
 using RF1.Services.PhotoClients;
 using System;
 using System.IO;
@@ -11,13 +13,15 @@ public class BunnyService : IPhotoService
     private readonly HttpClient _httpClient;
     private string apiKey = "6892ff89-574b-4f1d-9286d9d4961a-da4d-4696";
     private string storageUrl = "https://storage.bunnycdn.com/real-food-app";
+    private readonly IPhotoLinkService _photoLinkService;
 
-    public BunnyService(HttpClient httpClient)
+    public BunnyService(HttpClient httpClient, IPhotoLinkService photoLinkService)
     {
         _httpClient = httpClient;
+        _photoLinkService = photoLinkService;
     }
 
-    public async Task UploadPhotoAsync(IFormFile photo)
+    public async Task UploadPhotoAsync(IFormFile photo, string userId)
     {
         if (photo == null || photo.Length == 0)
         {
@@ -29,7 +33,17 @@ public class BunnyService : IPhotoService
             content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
             _httpClient.DefaultRequestHeaders.Add("AccessKey", apiKey);
 
-            var response = await _httpClient.PutAsync($"{storageUrl}/{photo.FileName}", content); // THAT MUST BE THE USER'S PHOTO ID FROM DB
+            var photoExtension = Path.GetExtension(photo.FileName);
+
+            var photoLink = new PhotoLink
+            {
+                Id =  Guid.NewGuid().ToString() + photoExtension,
+                UserId = userId
+            };
+
+            var createdPhotoLink = await _photoLinkService.CreatePhotoLink(photoLink);
+
+            var response = await _httpClient.PutAsync($"{storageUrl}/{createdPhotoLink.Id}{photoExtension}", content); // THAT MUST BE THE USER'S PHOTO ID FROM DB
             response.EnsureSuccessStatusCode();
         }
     }

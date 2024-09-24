@@ -19,11 +19,11 @@ namespace RF1.Controllers.Api
         }
 
         [HttpPost("upload")]
-        public async Task<IActionResult> UploadPhoto(IFormFile photo)
+        public async Task<IActionResult> StorePhoto([FromForm]IFormFile photo, [FromForm] string userId)
         {
             try
             {
-                await _photoService.UploadPhotoAsync(photo);
+                await _photoService.UploadPhotoAsync(photo, userId);
                 return Ok(new { message = "Image uploaded successfully!"});
             }
             catch (HttpRequestException ex)
