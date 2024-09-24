@@ -34,31 +34,37 @@ public class BunnyService : IPhotoService
             throw new ArgumentException("No file provided.");
         }
 
+        var photoExtension = Path.GetExtension(photo.FileName);
+        var newPhotoLink = new PhotoLink
+        {
+            Id = Guid.NewGuid().ToString() + photoExtension,
+            UserId = userId
+        };
+
+        await _photoLinkService.CreatePhotoLinkAsync(newPhotoLink);
+
         using (var content = new StreamContent(photo.OpenReadStream()))
         {
             content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
+
+            _httpClient.DefaultRequestHeaders.Remove("AccessKey");
             _httpClient.DefaultRequestHeaders.Add("AccessKey", apiKey);
 
-            var photoExtension = Path.GetExtension(photo.FileName);
+            var response = await _httpClient.PutAsync($"{storageUrl}/{newPhotoLink.Id}", content);
 
-            var photoLink = new PhotoLink
+            if (!response.IsSuccessStatusCode)
             {
-                Id =  Guid.NewGuid().ToString() + photoExtension,
-                UserId = userId
-            };
-
-            // Store in db
-            var createdPhotoLink = await _photoLinkService.CreatePhotoLinkAsync(photoLink);
-
-            // Store in cloud
-            var response = await _httpClient.PutAsync($"{storageUrl}/{photoLink.Id}", content);
-            return photoLink.Id;
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Failed to upload photo to cloud: {errorMessage}");
+            }
+            return newPhotoLink.Id;
         }
     }
 
     public async Task<IActionResult> ReadPhotoAsync(string fileName)
     {
         var url = $"{storageUrl}/{fileName}";
+        _httpClient.DefaultRequestHeaders.Remove("AccessKey");
         _httpClient.DefaultRequestHeaders.Add("AccessKey", apiKey);
 
         var response = await _httpClient.GetAsync(url);
@@ -71,6 +77,20 @@ public class BunnyService : IPhotoService
         {
             FileDownloadName = fileName
         };
+    }
+
+    public async Task<string> UpdatePhotoAsync(IFormFile photo, string fileName, string userId)
+    {
+        if (photo == null || photo.Length == 0)
+        {
+            throw new ArgumentException("No file provided.");
+        }
+
+        await DeletePhotoAsync(fileName);
+
+        var photoId = await StorePhotoAsync(photo, userId);
+
+        return photoId;
     }
 
     public async Task DeletePhotoAsync(string fileName)

@@ -13,6 +13,11 @@ namespace RF1.Services
         {
             _context = context;
         }
+        public async Task CreatePhotoLinkAsync(PhotoLink photoLink)
+        {
+            await _context.PhotoLinks.AddAsync(photoLink);
+            await _context.SaveChangesAsync();
+        }
 
         public IQueryable GetUserPhotoLinks(string userId)
         {
@@ -20,9 +25,13 @@ namespace RF1.Services
 
             return _context.PhotoLinks.Where(p => p.UserId == user.Id).Select(u => u.Id);
         }
-
-        public async Task<PhotoLink> CreatePhotoLinkAsync(PhotoLink photoLink)
+        public async Task<PhotoLink> UpdatePhotoLink(PhotoLink photoLink)
         {
+            var existingPhotoLink = await _context.PhotoLinks.FirstOrDefaultAsync(p => p.Id == photoLink.Id);
+            if (existingPhotoLink == null) throw new ArgumentNullException("Photo not found");
+
+            _context.PhotoLinks.Remove(existingPhotoLink);
+
             await _context.PhotoLinks.AddAsync(photoLink);
             await _context.SaveChangesAsync();
 
@@ -37,6 +46,5 @@ namespace RF1.Services
             _context.PhotoLinks.Remove(photo);
             _context.SaveChanges();
         }
-
     }
 }

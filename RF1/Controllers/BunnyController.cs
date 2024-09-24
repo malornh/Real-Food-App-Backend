@@ -6,25 +6,28 @@ using System.Threading.Tasks;
 
 namespace RF1.Controllers.Api
 {
+
+    // That controller is for TEST purposes only
+
     [ApiController]
     [Route("api/[controller]")]
-    public class PhotoController : ControllerBase
+    public class BunnyController : ControllerBase
     {
         private static readonly HttpClient _httpClient = new HttpClient();
-        private readonly IPhotoService _photoService;
+        private  readonly IPhotoService _photoService;
 
-        public PhotoController(IPhotoService photoService)
+        public BunnyController(IPhotoService photoService)
         {
             _photoService = photoService;
         }
 
         [HttpPost("upload")]
-        public async Task<IActionResult> StorePhoto([FromForm]IFormFile photo, [FromForm] string userId)
+        public async Task<IActionResult> UploadPhoto([FromForm]IFormFile photo, [FromForm] string userId)
         {
             try
             {
                 var photoId = await _photoService.StorePhotoAsync(photo, userId);
-                return Ok(new { message = "Image uploaded successfully!"});
+                return Ok(new { message = $"Image created successfully! {photoId}" });
             }
             catch (HttpRequestException ex)
             {
@@ -33,7 +36,7 @@ namespace RF1.Controllers.Api
         }
 
         [HttpGet("read/{fileName}")]
-        public async Task<IActionResult> DownloadImage(string fileName)
+        public async Task<IActionResult> ReadPhoto(string fileName)
         {
             try
             {
@@ -47,8 +50,22 @@ namespace RF1.Controllers.Api
             }
         }
 
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdatePhoto([FromForm] IFormFile photo, [FromForm] string fileName, [FromForm] string userId)
+        {
+            try
+            {
+                var photoId = await _photoService.UpdatePhotoAsync(photo, fileName, userId);
+                return Ok(new { message = $"Image updated successfully! {photoId}" });
+            }
+            catch (HttpRequestException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error uploading image: {ex.Message}");
+            }
+        }
+
         [HttpDelete("delete/{fileName}")]
-        public async Task<IActionResult> DeleteImage(string fileName)
+        public async Task<IActionResult> DeletePhoto(string fileName)
         {
             try
             {
