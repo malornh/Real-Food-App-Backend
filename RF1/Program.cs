@@ -9,6 +9,12 @@ using RF1.Services.PhotoClients;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add User Secrets for development
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddUserSecrets<Program>(); // Replace 'Program' with the name of your class
+}
+
 // Add services to the container.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));

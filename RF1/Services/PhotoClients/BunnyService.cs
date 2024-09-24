@@ -11,14 +11,20 @@ using System.Threading.Tasks;
 public class BunnyService : IPhotoService
 {
     private readonly HttpClient _httpClient;
-    private string apiKey = "6892ff89-574b-4f1d-9286d9d4961a-da4d-4696";
+    private string apiKey;
     private string storageUrl = "https://storage.bunnycdn.com/real-food-app";
     private readonly IPhotoLinkService _photoLinkService;
 
-    public BunnyService(HttpClient httpClient, IPhotoLinkService photoLinkService)
+    public BunnyService(HttpClient httpClient, IPhotoLinkService photoLinkService, IConfiguration configuration)
     {
         _httpClient = httpClient;
         _photoLinkService = photoLinkService;
+        apiKey = configuration["BUNNY_API_KEY"];
+
+        if (string.IsNullOrEmpty(apiKey))
+        {
+            throw new Exception("Bunny API Key not found in User Secrets.");
+        }
     }
 
     public async Task<string> StorePhotoAsync(IFormFile photo, string userId)
