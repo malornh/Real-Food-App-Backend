@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using RF1.Services;
 
 namespace RF1.Controllers.Api 
 {
@@ -18,11 +19,13 @@ namespace RF1.Controllers.Api
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
+        private readonly IFarmsService _farmService;
 
-        public FarmsController(DataContext context, IMapper mapper)
+        public FarmsController(DataContext context, IMapper mapper, IFarmsService farmService)
         {
             _context = context;
             _mapper = mapper;
+            _farmService = farmService;
         }
 
         // GET: api/Farms
@@ -104,7 +107,7 @@ namespace RF1.Controllers.Api
                 .Select(f => new FarmFullInfoDto
                 {
                     Id = f.Id,
-                    Image = f.Image,
+                    PhotoId = f.PhotoId,
                     UserId = f.UserId,
                     Name = f.Name,
                     Description = f.Description,
@@ -133,12 +136,7 @@ namespace RF1.Controllers.Api
                 return BadRequest(ModelState);
             }
 
-            var farm = _mapper.Map<Farm>(farmDto);
-
-            _context.Farms.Add(farm);
-            await _context.SaveChangesAsync();
-
-            farmDto.Id = farm.Id;
+            farmDto = await _farmService.CreateFarm(farmDto);
 
             return CreatedAtAction("GetFarm", new { id = farmDto.Id }, farmDto);
         }

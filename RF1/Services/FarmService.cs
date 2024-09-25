@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RF1.Data;
 using RF1.Dtos;
 using RF1.Models;
+using RF1.Services.PhotoClients;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,11 +14,13 @@ namespace RF1.Services
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
+        private readonly IPhotoService _photoService;
 
-        public FarmsService(DataContext context, IMapper mapper)
+        public FarmsService(DataContext context, IMapper mapper, IPhotoService photoService)
         {
             _context = context;
             _mapper = mapper;
+            _photoService = photoService;
         }
 
         public async Task<IEnumerable<FarmDto>> GetFarms()
@@ -74,7 +77,7 @@ namespace RF1.Services
                 .Select(f => new FarmFullInfoDto
                 {
                     Id = f.Id,
-                    Image = f.Image,
+                    PhotoId = f.PhotoId,
                     UserId = f.UserId,
                     Name = f.Name,
                     Description = f.Description,
@@ -91,9 +94,11 @@ namespace RF1.Services
         public async Task<FarmDto> CreateFarm(FarmDto farmDto)
         {
             var farm = _mapper.Map<Farm>(farmDto);
+            farm.PhotoId = await _photoService.StorePhotoAsync(farmDto.PhotoFile, farmDto.UserId);
             _context.Farms.Add(farm);
             await _context.SaveChangesAsync();
             farmDto.Id = farm.Id;
+            farmDto.PhotoId = farm.PhotoId;
             return farmDto;
         }
 

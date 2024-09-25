@@ -73,7 +73,7 @@ namespace RF1.Services
                     {
                         Id = o.Product.FarmId,
                         Name = o.Product.Farm.Name,
-                        Image = o.Product.Farm.Image
+                        PhotoId = o.Product.Farm.PhotoId
                     }
                 })
                 .ToListAsync();

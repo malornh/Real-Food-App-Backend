@@ -10,8 +10,12 @@ namespace RF1.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Required]
-        public string Image { get; set; }
+        [Column(TypeName = "nvarchar(450)")]
+        [MaxLength(450)]
+        public string? PhotoId { get; set; }
+
+        [ForeignKey("PhotoId")]
+        public PhotoLink Photo { get; set; }
 
         [Display(Name = "User")]
         [Required]
