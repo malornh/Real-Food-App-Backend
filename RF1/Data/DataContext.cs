@@ -29,11 +29,11 @@ namespace RF1.Data
                 .HasOne(f => f.Photo)
                 .WithMany()
                 .HasForeignKey(f => f.PhotoId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Farm>()
                 .HasOne(f => f.User)
-                .WithMany()
+                .WithMany(u => u.Farms)
                 .HasForeignKey(f => f.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
         }

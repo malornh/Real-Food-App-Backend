@@ -101,11 +101,12 @@ public class BunnyService : IPhotoService
         // TO-DO: We must delete from db, delete from cloud and then we dont get any errors _context.SaveChanges(); 
         // Same for Storing Photos
 
-        // Delete from db
-        await _photoLinkService.DeletePhotoLinkAsync(fileName); 
-
         // Delete from cloud
         var response = await _httpClient.DeleteAsync(url);
+
+        // Delete from db
+        await _photoLinkService.DeletePhotoLinkAsync(fileName); 
+        
         response.EnsureSuccessStatusCode();
     }
 

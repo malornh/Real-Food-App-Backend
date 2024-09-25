@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RF1.Data;
 using RF1.Dtos;
@@ -124,17 +125,26 @@ namespace RF1.Services
             return farmDto;
         }
 
-        public async Task<bool> DeleteFarm(int id)
+        public async Task DeleteFarm(int id)
         {
+            // First check if the farm exists
             var farmInDb = await _context.Farms.FirstOrDefaultAsync(f => f.Id == id);
             if (farmInDb == null)
             {
-                return false;
+                // Log the fact that the farm was not found
+                Console.WriteLine($"Farm with ID {id} not found.");
+                throw new KeyNotFoundException($"Farm with ID {id} not found."); // Or return a NotFound status
             }
 
+            // If there is a photo, delete it
+            if (farmInDb.PhotoId != null)
+            {
+                await _photoService.DeletePhotoAsync(farmInDb.PhotoId);
+            }
+
+            // Remove the farm
             _context.Farms.Remove(farmInDb);
             await _context.SaveChangesAsync();
-            return true;
         }
 
         private bool FarmExists(int id)

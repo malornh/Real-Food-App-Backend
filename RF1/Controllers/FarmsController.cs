@@ -163,19 +163,12 @@ namespace RF1.Controllers.Api
 
         // DELETE: api/Farms/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteFarm(int id)
+        public async Task<IActionResult> DeleteFarm(int id)
         {
-            var farmInDb = _context.Farms.FirstOrDefault(f => f.Id == id);
-            if (farmInDb == null)
-            {
-                return NotFound();
-            }
-
-            _context.Farms.Remove(farmInDb);
-            _context.SaveChanges();
-
-            return NoContent();
+            await _farmService.DeleteFarm(id);
+            return Ok();
         }
+
         private bool FarmExists(int id)
         {
             return _context.Farms.Any(e => e.Id == id);

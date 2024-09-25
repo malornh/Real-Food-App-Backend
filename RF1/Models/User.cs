@@ -4,6 +4,7 @@ namespace RF1.Models
 {
     public class User : IdentityUser
     {
-        public List<PhotoLink> photos { get; set; }
+        public List<Farm> Farms { get; set; }
+        public List<PhotoLink> Photos { get; set; }
     }
 }
