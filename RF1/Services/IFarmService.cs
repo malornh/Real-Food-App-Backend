@@ -13,7 +13,7 @@ namespace RF1.Services
         Task<FarmDto> GetFarm(int id);
         Task<FarmFullInfoDto> GetFarmWithProducts(int farmId);
         Task<FarmDto> CreateFarm(FarmDto farmDto);
-        Task<bool> UpdateFarm(int id, FarmDto farmDto);
+        Task<FarmDto> UpdateFarm(int id, FarmDto farmDto);
         Task<bool> DeleteFarm(int id);
     }
 }

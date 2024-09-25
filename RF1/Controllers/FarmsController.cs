@@ -155,29 +155,7 @@ namespace RF1.Controllers.Api
                 return BadRequest(ModelState);
             }
 
-            var farmInDb = await _context.Farms.FirstOrDefaultAsync(f => f.Id == id);
-            if (farmInDb == null)
-            {
-                return NotFound();
-            }
-
-            _mapper.Map(farmDto, farmInDb);
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!FarmExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            farmDto = await _farmService.UpdateFarm(id, farmDto);
 
             return Ok(farmDto);
         }

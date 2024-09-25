@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RF1.Data;
 using RF1.Dtos;
@@ -102,38 +103,25 @@ namespace RF1.Services
             return farmDto;
         }
 
-        public async Task<bool> UpdateFarm(int id, FarmDto farmDto)
+        public async Task<FarmDto> UpdateFarm(int id, FarmDto farmDto)
         {
-            if (id != farmDto.Id)
-            {
-                return false;
-            }
-
             var farmInDb = await _context.Farms.FirstOrDefaultAsync(f => f.Id == id);
-            if (farmInDb == null)
-            {
-                return false;
-            }
+            if (farmInDb == null) throw new ArgumentNullException("Farm not found");
 
             _mapper.Map(farmDto, farmInDb);
+            farmInDb.Id = id;
 
-            try
+            if(farmInDb.PhotoId == null)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
+                farmInDb.PhotoId = await _photoService.StorePhotoAsync(farmDto.PhotoFile, farmDto.UserId);
+            }else
             {
-                if (!FarmExists(id))
-                {
-                    return false;
-                }
-                else
-                {
-                    throw;
-                }
+                farmInDb.PhotoId = await _photoService.UpdatePhotoAsync(farmDto.PhotoFile, farmInDb.PhotoId, farmDto.UserId);
             }
 
-            return true;
+            await _context.SaveChangesAsync();
+
+            return farmDto;
         }
 
         public async Task<bool> DeleteFarm(int id)
