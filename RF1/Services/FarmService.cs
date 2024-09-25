@@ -104,7 +104,7 @@ namespace RF1.Services
             return farmDto;
         }
 
-        public async Task<FarmDto> UpdateFarm(int id, FarmDto farmDto)
+        public async Task<FarmDto> UpdateFarm(int id, [FromForm] FarmDto farmDto)
         {
             var farmInDb = await _context.Farms.FirstOrDefaultAsync(f => f.Id == id);
             if (farmInDb == null) throw new ArgumentNullException("Farm not found");
@@ -112,12 +112,16 @@ namespace RF1.Services
             _mapper.Map(farmDto, farmInDb);
             farmInDb.Id = id;
 
-            if(farmInDb.PhotoId == null)
+            if (farmDto.PhotoFile != null)
             {
-                farmInDb.PhotoId = await _photoService.StorePhotoAsync(farmDto.PhotoFile, farmDto.UserId);
-            }else
-            {
-                farmInDb.PhotoId = await _photoService.UpdatePhotoAsync(farmDto.PhotoFile, farmInDb.PhotoId, farmDto.UserId);
+                if (!string.IsNullOrEmpty(farmInDb.PhotoId))
+                {
+                    farmInDb.PhotoId = await _photoService.UpdatePhotoAsync(farmDto.PhotoFile, farmInDb.PhotoId, farmInDb.UserId);
+                }
+                else
+                {
+                    farmInDb.PhotoId = await _photoService.StorePhotoAsync(farmDto.PhotoFile, farmInDb.UserId);
+                }
             }
 
             await _context.SaveChangesAsync();
@@ -127,22 +131,18 @@ namespace RF1.Services
 
         public async Task DeleteFarm(int id)
         {
-            // First check if the farm exists
             var farmInDb = await _context.Farms.FirstOrDefaultAsync(f => f.Id == id);
             if (farmInDb == null)
             {
-                // Log the fact that the farm was not found
                 Console.WriteLine($"Farm with ID {id} not found.");
-                throw new KeyNotFoundException($"Farm with ID {id} not found."); // Or return a NotFound status
+                throw new KeyNotFoundException($"Farm with ID {id} not found.");
             }
 
-            // If there is a photo, delete it
             if (farmInDb.PhotoId != null)
             {
                 await _photoService.DeletePhotoAsync(farmInDb.PhotoId);
             }
 
-            // Remove the farm
             _context.Farms.Remove(farmInDb);
             await _context.SaveChangesAsync();
         }
