@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RF1.Data;
 using RF1.Dtos;
 using RF1.Models;
+using RF1.Services.PhotoClients;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,11 +14,13 @@ namespace RF1.Services
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
+        private readonly IPhotoService _photoService;
 
-        public ShopsService(DataContext context, IMapper mapper)
+        public ShopsService(DataContext context, IMapper mapper, IPhotoService photoService)
         {
             _context = context;
             _mapper = mapper;
+            _photoService = photoService;
         }
 
         public async Task<IEnumerable<ShopDto>> GetShops()
@@ -83,7 +86,7 @@ namespace RF1.Services
                 .Select(s => new ShopFullInfoDto
                 {
                     Id = s.Id,
-                    Image = s.Image,
+                    PhotoId = s.PhotoId,
                     UserId = s.UserId,
                     Name = s.Name,
                     Description = s.Description,
@@ -100,6 +103,9 @@ namespace RF1.Services
         public async Task<ShopDto> CreateShop(ShopDto shopDto)
         {
             var shop = _mapper.Map<Shop>(shopDto);
+
+            var photoId = await _photoService.StorePhotoAsync(shopDto.PhotoFile, shopDto.UserId);
+            shop.PhotoId = photoId;
 
             _context.Shops.Add(shop);
             await _context.SaveChangesAsync();

@@ -69,7 +69,7 @@ namespace RF1.Services
                 {
                     Id = o.Shop.Id,
                     Name = o.Shop.Name,
-                    Image = o.Shop.Image,
+                    PhotoId = o.Shop.PhotoId,
                     Latitude = o.Product.Farm.Latitude,
                     Longitude = o.Product.Farm.Longitude,
                 }
@@ -114,7 +114,7 @@ namespace RF1.Services
                 {
                     Id = o.Shop.Id,
                     Name = o.Shop.Name,
-                    Image = o.Shop.Image,
+                    PhotoId = o.Shop.PhotoId,
                     Latitude = o.Shop.Latitude,
                     Longitude = o.Shop.Longitude,
                 }

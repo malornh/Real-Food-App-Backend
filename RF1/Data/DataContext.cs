@@ -36,6 +36,18 @@ namespace RF1.Data
                 .WithMany(u => u.Farms)
                 .HasForeignKey(f => f.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Shop>()
+              .HasOne(f => f.Photo)
+              .WithMany()
+              .HasForeignKey(f => f.PhotoId)
+              .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Shop>()
+                .HasOne(f => f.User)
+                .WithMany(u => u.Shops)
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

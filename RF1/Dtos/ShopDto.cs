@@ -19,7 +19,9 @@ namespace RF1.Models
         public string Description { get; set; }
 
         [Required]
-        public string Image { get; set; }
+        public IFormFile PhotoFile { get; set; }
+
+        public string? PhotoId { get; set; }
 
         [Required]
         public double Latitude { get; set; }
@@ -27,6 +29,6 @@ namespace RF1.Models
         [Required]
         public double Longitude { get; set; }
 
-        public double Rating { get; set; }
+        public double? Rating { get; set; }
     }
 }
