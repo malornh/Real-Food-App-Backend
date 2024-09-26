@@ -10,7 +10,7 @@ namespace RF1.Dtos
         public string Type { get; set; }
         public double PricePerUnit { get; set; }
         public UnitOfMeasurement UnitOfMeasurement { get; set; }
-        public string Image { get; set; }
+        public string? PhotoId { get; set; }
         public double? Rating { get; set; }
         public DateOnly DateUpdated { get; set; }
     }

@@ -62,7 +62,7 @@ namespace RF1.Services
                     Type = p.Type,
                     PricePerUnit = p.PricePerUnit,
                     UnitOfMeasurement = p.UnitOfMeasurement,
-                    Image = p.Image,
+                    PhotoId = p.PhotoId,
                     FarmId = p.FarmId,
                     Quantity = p.Quantity ?? 0,
                     DeliveryRadius = p.DeliveryRadius ?? 0,

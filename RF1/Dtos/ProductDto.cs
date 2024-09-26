@@ -20,7 +20,8 @@ namespace RF1.Models
         public int FarmId { get; set; }
 
         [Required]
-        public string Image { get; set; }
+        public IFormFile PhotoFile { get; set; }
+        public string? PhotoId { get; set; }
         public string? Description { get; set; }
 
         [Display(Name = "Unit Of Measurement")]

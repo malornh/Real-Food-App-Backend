@@ -89,7 +89,7 @@ namespace RF1.Controllers.Api
                     Type = p.Type,
                     PricePerUnit = p.PricePerUnit,
                     UnitOfMeasurement = p.UnitOfMeasurement,
-                    Image = p.Image,
+                    PhotoId = p.PhotoId,
                     FarmId = p.FarmId,
                     Quantity = p.Quantity.HasValue ? p.Quantity.Value : 0, // Handle nullable Quantity
                     DeliveryRadius = p.DeliveryRadius.HasValue ? p.DeliveryRadius.Value : 0, // Handle nullable DeliveryRadius

@@ -66,7 +66,7 @@ namespace RF1.Services
                         Type = o.Product.Type,
                         PricePerUnit = o.Product.PricePerUnit,
                         UnitOfMeasurement = o.Product.UnitOfMeasurement,
-                        Image = o.Product.Image,
+                        PhotoId = o.Product.PhotoId,
                         Rating = _context.Ratings
                             .Where(r => r.ProductId == o.Product.Id)
                             .Average(r => (double?)r.RatingValue) ?? 0,

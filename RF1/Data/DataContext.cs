@@ -48,6 +48,12 @@ namespace RF1.Data
                 .WithMany(u => u.Shops)
                 .HasForeignKey(f => f.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Product>()
+             .HasOne(p => p.Photo)
+             .WithMany()
+             .HasForeignKey(f => f.PhotoId)
+             .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

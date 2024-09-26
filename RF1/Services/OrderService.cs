@@ -53,7 +53,7 @@ namespace RF1.Services
                 {
                     Id = o.Product.Id,
                     Name = o.Product.Name,
-                    Image = o.Product.Image,
+                    PhotoId = o.Product.PhotoId,
                     PricePerUnit = o.Product.PricePerUnit,
                     Type = o.Product.Type,
                 },
@@ -98,7 +98,7 @@ namespace RF1.Services
                 {
                     Id = o.Product.Id,
                     Name = o.Product.Name,
-                    Image = o.Product.Image,
+                    PhotoId = o.Product.PhotoId,
                     PricePerUnit = o.Product.PricePerUnit,
                     Type = o.Product.Type,
                 },

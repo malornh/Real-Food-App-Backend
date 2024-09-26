@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RF1.Data;
 using RF1.Dtos;
 using RF1.Models;
+using RF1.Services.PhotoClients;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,11 +14,13 @@ namespace RF1.Services
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
+        private readonly IPhotoService _photoService;
 
-        public ProductsService(DataContext context, IMapper mapper)
+        public ProductsService(DataContext context, IMapper mapper, IPhotoService photoService)
         {
             _context = context;
             _mapper = mapper;
+            _photoService = photoService;
         }
 
         public async Task<IEnumerable<ProductDto>> GetProducts()
@@ -35,47 +38,46 @@ namespace RF1.Services
         public async Task<ProductDto> CreateProduct(ProductDto productDto)
         {
             var product = _mapper.Map<Product>(productDto);
+            var farm = GetProductsFarm(productDto);
+
+            product.PhotoId = await _photoService.StorePhotoAsync(productDto.PhotoFile, farm.UserId);
 
             _context.Products.Add(product);
+
             await _context.SaveChangesAsync();
 
             productDto.Id = product.Id;
+            productDto.PhotoId = product.PhotoId;
 
             return productDto;
         }
 
-        public async Task<bool> UpdateProduct(int id, ProductDto productDto)
+        public async Task<ProductDto> UpdateProduct(int id, ProductDto productDto)
         {
-            if (id != productDto.Id)
-            {
-                return false;
-            }
-
             var productInDb = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
-            if (productInDb == null)
-            {
-                return false;
-            }
+            if (productInDb == null) throw new ArgumentNullException();
+
+            var farm = await _context.Farms.FirstOrDefaultAsync(f => f.Id == productDto.FarmId);
 
             _mapper.Map(productDto, productInDb);
 
-            try
+            if (productDto.PhotoFile != null)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductExists(id))
+                if (!string.IsNullOrEmpty(productInDb.PhotoId))
                 {
-                    return false;
+                    productInDb.PhotoId = await _photoService.UpdatePhotoAsync(productDto.PhotoFile, productInDb.PhotoId, farm.UserId);
                 }
                 else
                 {
-                    throw;
+                    productInDb.PhotoId = await _photoService.StorePhotoAsync(productDto.PhotoFile, farm.UserId);
                 }
             }
 
-            return true;
+            await _context.SaveChangesAsync();
+
+            _mapper.Map(productInDb, productDto);
+
+            return productDto;
         }
 
         public async Task<bool> DeleteProduct(int id)
@@ -92,9 +94,13 @@ namespace RF1.Services
             return true;
         }
 
-        public async Task<bool> ValidateFarmId(int farmId)
+        private Farm GetProductsFarm(ProductDto productDto)
         {
-            return await _context.Farms.AnyAsync(f => f.Id == farmId);
+            var farm = _context.Farms.FirstOrDefault(f => f.Id == productDto.FarmId);
+
+            if (farm == null) throw new ArgumentNullException();
+
+            return farm;
         }
 
         private bool ProductExists(int id)

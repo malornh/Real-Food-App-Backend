@@ -10,8 +10,7 @@ namespace RF1.Services
         Task<IEnumerable<ProductDto>> GetProducts();
         Task<ProductDto> GetProduct(int id);
         Task<ProductDto> CreateProduct(ProductDto productDto);
-        Task<bool> UpdateProduct(int id, ProductDto productDto);
+        Task<ProductDto> UpdateProduct(int id, ProductDto productDto);
         Task<bool> DeleteProduct(int id);
-        Task<bool> ValidateFarmId(int farmId);
     }
 }
