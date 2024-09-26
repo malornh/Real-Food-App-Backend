@@ -93,12 +93,9 @@ namespace RF1.Controllers.Api
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteShop(int id)
         {
-            var result = await _shopsService.DeleteShop(id);
-            if (!result)
-            {
-                return NotFound();
-            }
-            return NoContent();
+            await _shopsService.DeleteShop(id);
+
+            return Ok();
         }
     }
 }

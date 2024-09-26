@@ -80,18 +80,18 @@ namespace RF1.Services
             return productDto;
         }
 
-        public async Task<bool> DeleteProduct(int id)
+        public async Task DeleteProduct(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
+            if (product == null) throw new ArgumentNullException();
+
+            if (product.PhotoId != null)
             {
-                return false;
+                await _photoService.DeletePhotoAsync(product.PhotoId);
             }
 
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
-
-            return true;
         }
 
         private Farm GetProductsFarm(ProductDto productDto)

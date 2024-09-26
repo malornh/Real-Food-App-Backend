@@ -11,6 +11,6 @@ namespace RF1.Services
         Task<ProductDto> GetProduct(int id);
         Task<ProductDto> CreateProduct(ProductDto productDto);
         Task<ProductDto> UpdateProduct(int id, ProductDto productDto);
-        Task<bool> DeleteProduct(int id);
+        Task DeleteProduct(int id);
     }
 }

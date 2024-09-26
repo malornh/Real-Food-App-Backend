@@ -134,11 +134,7 @@ namespace RF1.Services
         public async Task DeleteFarm(int id)
         {
             var farmInDb = await _context.Farms.FirstOrDefaultAsync(f => f.Id == id);
-            if (farmInDb == null)
-            {
-                Console.WriteLine($"Farm with ID {id} not found.");
-                throw new KeyNotFoundException($"Farm with ID {id} not found.");
-            }
+            if (farmInDb == null) throw new ArgumentNullException();
 
             if (farmInDb.PhotoId != null)
             {

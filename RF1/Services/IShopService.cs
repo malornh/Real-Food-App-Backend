@@ -13,6 +13,6 @@ namespace RF1.Services
         Task<ShopFullInfoDto> GetShopOrdersWithFarms(int shopId);
         Task<ShopDto> CreateShop(ShopDto shopDto);
         Task<ShopDto> UpdateShop(int id, ShopDto shopDto);
-        Task<bool> DeleteShop(int id);
+        Task DeleteShop(int id);
     }
 }

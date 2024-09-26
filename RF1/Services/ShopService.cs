@@ -143,23 +143,18 @@ namespace RF1.Services
             return shopDto;
         }
 
-        public async Task<bool> DeleteShop(int id)
+        public async Task DeleteShop(int id)
         {
-            var shop = await _context.Shops.FindAsync(id);
-            if (shop == null)
+            var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == id);
+            if (shop == null) throw new ArgumentNullException();
+
+            if (shop.PhotoId != null)
             {
-                return false;
+                await _photoService.DeletePhotoAsync(shop.PhotoId);
             }
 
             _context.Shops.Remove(shop);
             await _context.SaveChangesAsync();
-
-            return true;
-        }
-
-        private bool ShopExists(int id)
-        {
-            return _context.Shops.Any(e => e.Id == id);
         }
     }
 }

@@ -161,13 +161,8 @@ namespace RF1.Controllers.Api
         public async Task<IActionResult> DeleteFarm(int id)
         {
             await _farmService.DeleteFarm(id);
+
             return Ok();
         }
-
-        private bool FarmExists(int id)
-        {
-            return _context.Farms.Any(e => e.Id == id);
-        }
-
     }
 }
