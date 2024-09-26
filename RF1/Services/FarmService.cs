@@ -25,32 +25,43 @@ namespace RF1.Services
             _photoService = photoService;
         }
 
-        public async Task<IEnumerable<FarmDto>> GetFarms()
+        public async Task<IEnumerable<FarmDto>> GetAllFarmsAsync()
         {
             var farms = await _context.Farms.ToListAsync();
             return _mapper.Map<List<FarmDto>>(farms);
         }
 
-        public async Task<IEnumerable<FarmDto>> GetFarmsByIds(string farmIds)
+        public async Task<IEnumerable<FarmDto>> GetFarmsByIdsAsync(string farmIds)
         {
             var farmIdsArray = farmIds.Split(',').Select(int.Parse).ToArray();
-            var farms = await _context.Farms.Where(f => farmIdsArray.Contains(f.Id)).ToListAsync();
+            var farms = await _context.Farms
+                .Where(f => farmIdsArray.Contains(f.Id))
+                .ToListAsync();
+
             return _mapper.Map<List<FarmDto>>(farms);
         }
 
-        public async Task<IEnumerable<FarmDto>> GetFarmsByUserId(string userId)
+        public async Task<IEnumerable<FarmDto>> GetFarmsByUserIdAsync(string userId)
         {
-            var farms = await _context.Farms.Where(f => f.UserId == userId).ToListAsync();
+            var farms = await _context.Farms
+                .Where(f => f.UserId == userId)
+                .ToListAsync();
+
+            if (farms == null || farms.Count == 0)
+            {
+                return new List<FarmDto>();
+            }
+
             return _mapper.Map<List<FarmDto>>(farms);
         }
 
-        public async Task<FarmDto> GetFarm(int id)
+        public async Task<FarmDto> GetFarmByIdAsync(int id)
         {
-            var farm = await _context.Farms.FirstOrDefaultAsync(f => f.Id == id);
-            return _mapper.Map<FarmDto>(farm);
+            var farm = await _context.Farms.FindAsync(id);
+            return farm == null ? null : _mapper.Map<FarmDto>(farm);
         }
 
-        public async Task<FarmFullInfoDto> GetFarmWithProducts(int farmId)
+        public async Task<FarmFullInfoDto> GetFarmWithProductsAsync(int farmId)
         {
             var farmProducts = await _context.Products
                 .Where(p => p.FarmId == farmId)

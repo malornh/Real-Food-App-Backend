@@ -30,101 +30,71 @@ namespace RF1.Controllers.Api
 
         // GET: api/Farms
         [HttpGet]
-        public IEnumerable<FarmDto> GetFarms()
+        public async Task<ActionResult<IEnumerable<FarmDto>>> GetFarms()
         {
-            var farms = _context.Farms.ToList();
-            return _mapper.Map<List<FarmDto>>(farms);
+            var farms = await _farmService.GetAllFarmsAsync();
+
+            if (farms == null || !farms.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(farms);
         }
 
-        // GET: api/Farms/ByIds
         [HttpGet("ByIds")]
-        public IEnumerable<FarmDto> GetFarmsByIds(string farmIds)
+        public async Task<ActionResult<IEnumerable<FarmDto>>> GetFarmsByIds(string farmIds)
         {
-            var farmIdsArray = farmIds.Split(',').Select(int.Parse).ToArray();
-            var farms = _context.Farms.Where(f => farmIdsArray.Contains(f.Id)).ToList();
-            return _mapper.Map<List<FarmDto>>(farms);
+            var farms = await _farmService.GetFarmsByIdsAsync(farmIds);
+
+            if (farms == null || !farms.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(farms);
         }
 
         // GET: api/Farms/ByUser/5
         [HttpGet("ByUser/{userId}")]
         public async Task<ActionResult<IEnumerable<FarmDto>>> GetFarmsByUserId(string userId)
         {
-            var farms = await _context.Farms
-                .Where(f => f.UserId == userId)
-                .ToListAsync();
+            var farms = await _farmService.GetFarmsByUserIdAsync(userId);
 
-            if (farms == null || farms.Count == 0)
+            if (farms == null || !farms.Any())
             {
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<List<FarmDto>>(farms));
+            return Ok(farms);
         }
-
 
         // GET: api/Farms/5
         [HttpGet("{id}")]
-        public ActionResult<FarmDto> GetFarm(int id)
+        public async Task<ActionResult<FarmDto>> GetFarm(int id)
         {
-            var farm = _context.Farms.FirstOrDefault(f => f.Id == id);
+            var farm = await _farmService.GetFarmByIdAsync(id);
+
             if (farm == null)
             {
                 return NotFound();
             }
-            return _mapper.Map<FarmDto>(farm);
+
+            return Ok(farm);
         }
 
         // Method to get farm with products
         [HttpGet("{farmId}/FarmWithProducts")]
         public async Task<ActionResult<FarmFullInfoDto>> GetFarmWithProducts(int farmId)
         {
-            // Fetch farm products using LINQ query
-            var farmProducts = await _context.Products
-                .Where(p => p.FarmId == farmId)
-                .Select(p => new ProductDto
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Description = p.Description,
-                    Type = p.Type,
-                    PricePerUnit = p.PricePerUnit,
-                    UnitOfMeasurement = p.UnitOfMeasurement,
-                    PhotoId = p.PhotoId,
-                    FarmId = p.FarmId,
-                    Quantity = p.Quantity.HasValue ? p.Quantity.Value : 0, // Handle nullable Quantity
-                    DeliveryRadius = p.DeliveryRadius.HasValue ? p.DeliveryRadius.Value : 0, // Handle nullable DeliveryRadius
-                    MinUnitOrder = p.MinUnitOrder,
-                    DateUpdated = p.DateUpdated,
-                    Rating = _context.Ratings
-                            .Where(r => r.ProductId == p.Id)
-                            .Average(r => r.RatingValue)
-                })
-                .ToListAsync();
+            var farmWithProducts = await _farmService.GetFarmWithProductsAsync(farmId);
 
-            // Fetch farm details
-            var farmDetails = await _context.Farms
-                .Where(f => f.Id == farmId)
-                .Select(f => new FarmFullInfoDto
-                {
-                    Id = f.Id,
-                    PhotoId = f.PhotoId,
-                    UserId = f.UserId,
-                    Name = f.Name,
-                    Description = f.Description,
-                    Latitude = f.Latitude,
-                    Longitude = f.Longitude,
-                    Rating = f.Rating,
-                    Products = farmProducts
-                })
-                .FirstOrDefaultAsync();
-
-            // Check if any data is returned
-            if (farmDetails == null)
+            if (farmWithProducts == null)
             {
                 return NotFound("No data found for the farm");
             }
 
-            return Ok(farmDetails);
+            return Ok(farmWithProducts);
         }
 
         // POST: api/Farms

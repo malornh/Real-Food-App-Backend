@@ -29,7 +29,7 @@ namespace RF1.Data
                 .HasOne(f => f.Photo)
                 .WithMany()
                 .HasForeignKey(f => f.PhotoId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Farm>()
                 .HasOne(f => f.User)
@@ -41,7 +41,7 @@ namespace RF1.Data
               .HasOne(f => f.Photo)
               .WithMany()
               .HasForeignKey(f => f.PhotoId)
-              .OnDelete(DeleteBehavior.Cascade);
+              .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Shop>()
                 .HasOne(f => f.User)
