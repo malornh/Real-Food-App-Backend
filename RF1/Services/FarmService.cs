@@ -126,6 +126,8 @@ namespace RF1.Services
 
             await _context.SaveChangesAsync();
 
+            _mapper.Map(farmInDb, farmDto);
+
             return farmDto;
         }
 

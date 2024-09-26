@@ -138,6 +138,8 @@ namespace RF1.Services
 
             await _context.SaveChangesAsync();
 
+            _mapper.Map(shopInDb, shopDto);
+
             return shopDto;
         }
 

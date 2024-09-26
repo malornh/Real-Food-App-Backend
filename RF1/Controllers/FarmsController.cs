@@ -143,7 +143,7 @@ namespace RF1.Controllers.Api
 
         // PUT: api/Farms/5
         [HttpPut]
-        public async Task<IActionResult> UpdateFarm(FarmDto farmDto)
+        public async Task<ActionResult<FarmDto>> UpdateFarm(FarmDto farmDto)
         {
             if (!ModelState.IsValid)
             {

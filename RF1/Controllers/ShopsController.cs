@@ -77,7 +77,7 @@ namespace RF1.Controllers.Api
 
         // PUT: api/Shops/5
         [HttpPut]
-        public async Task<IActionResult> PutShop(ShopDto shopDto)
+        public async Task<ActionResult<ShopDto>> PutShop(ShopDto shopDto)
         {
             if (!ModelState.IsValid)
             {
