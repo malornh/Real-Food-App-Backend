@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RF1.Data;
 using RF1.Dtos;
@@ -115,38 +116,29 @@ namespace RF1.Services
             return shopDto;
         }
 
-        public async Task<bool> UpdateShop(int id, ShopDto shopDto)
+        public async Task<ShopDto> UpdateShop(int id, [FromForm]  ShopDto shopDto)
         {
-            if (id != shopDto.Id)
-            {
-                return false;
-            }
-
             var shopInDb = await _context.Shops.FirstOrDefaultAsync(s => s.Id == id);
-            if (shopInDb == null)
-            {
-                return false;
-            }
+            if (shopInDb == null) throw new ArgumentNullException("Shop not found");
 
             _mapper.Map(shopDto, shopInDb);
+            shopInDb.Id = id;
 
-            try
+            if (shopDto.PhotoFile != null)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ShopExists(id))
+                if (!string.IsNullOrEmpty(shopInDb.PhotoId))
                 {
-                    return false;
+                    shopInDb.PhotoId = await _photoService.UpdatePhotoAsync(shopDto.PhotoFile, shopInDb.PhotoId, shopInDb.UserId);
                 }
                 else
                 {
-                    throw;
+                    shopInDb.PhotoId = await _photoService.StorePhotoAsync(shopDto.PhotoFile, shopInDb.UserId);
                 }
             }
 
-            return true;
+            await _context.SaveChangesAsync();
+
+            return shopDto;
         }
 
         public async Task<bool> DeleteShop(int id)

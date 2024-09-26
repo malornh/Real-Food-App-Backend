@@ -76,25 +76,17 @@ namespace RF1.Controllers.Api
         }
 
         // PUT: api/Shops/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutShop(int id, ShopDto shopDto)
+        [HttpPut]
+        public async Task<IActionResult> PutShop(ShopDto shopDto)
         {
-            if (id != shopDto.Id)
-            {
-                return BadRequest();
-            }
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var result = await _shopsService.UpdateShop(id, shopDto);
-            if (!result)
-            {
-                return NotFound();
-            }
-            return NoContent();
+            shopDto = await _shopsService.UpdateShop(shopDto.Id, shopDto);
+
+            return Ok(shopDto);
         }
 
         // DELETE: api/Shops/5

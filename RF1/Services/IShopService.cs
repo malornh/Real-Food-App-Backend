@@ -12,7 +12,7 @@ namespace RF1.Services
         Task<IEnumerable<ShopDto>> GetShopsByUserId(string userId);
         Task<ShopFullInfoDto> GetShopOrdersWithFarms(int shopId);
         Task<ShopDto> CreateShop(ShopDto shopDto);
-        Task<bool> UpdateShop(int id, ShopDto shopDto);
+        Task<ShopDto> UpdateShop(int id, ShopDto shopDto);
         Task<bool> DeleteShop(int id);
     }
 }
