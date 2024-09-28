@@ -6,8 +6,10 @@ using RF1.Data;
 using RF1.Dtos;
 using RF1.Models;
 using RF1.Services.PhotoClients;
+using RF1.Services.UserAccessorService;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace RF1.Services
@@ -17,12 +19,14 @@ namespace RF1.Services
         private readonly DataContext _context;
         private readonly IMapper _mapper;
         private readonly IPhotoService _photoService;
+        private readonly IUserAccessorService _userAccessorService;
 
-        public FarmsService(DataContext context, IMapper mapper, IPhotoService photoService)
+        public FarmsService(DataContext context, IMapper mapper, IPhotoService photoService, IUserAccessorService userAccessorService)
         {
             _context = context;
             _mapper = mapper;
             _photoService = photoService;
+            _userAccessorService = userAccessorService;
         }
 
         public async Task<IEnumerable<FarmDto>> GetAllFarmsAsync()
@@ -106,10 +110,16 @@ namespace RF1.Services
 
         public async Task<FarmDto> CreateFarm(FarmDto farmDto)
         {
+            var userId = _userAccessorService.GetUserId();
+            farmDto.UserId = userId;
+
             var farm = _mapper.Map<Farm>(farmDto);
-            farm.PhotoId = await _photoService.StorePhotoAsync(farmDto.PhotoFile, farmDto.UserId);
+
+            farm.PhotoId = await _photoService.StorePhotoAsync(farmDto.PhotoFile, userId);
+
             _context.Farms.Add(farm);
             await _context.SaveChangesAsync();
+
             farmDto.Id = farm.Id;
             farmDto.PhotoId = farm.PhotoId;
             return farmDto;

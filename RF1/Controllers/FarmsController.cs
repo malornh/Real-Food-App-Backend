@@ -98,6 +98,7 @@ namespace RF1.Controllers.Api
         }
 
         // POST: api/Farms
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<FarmDto>> PostFarm(FarmDto farmDto)
         {
