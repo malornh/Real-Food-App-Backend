@@ -40,7 +40,7 @@ namespace RF1.Services
             var product = _mapper.Map<Product>(productDto);
             var farm = GetProductsFarm(productDto);
 
-            product.PhotoId = await _photoService.StorePhotoAsync(productDto.PhotoFile, farm.UserId);
+            product.PhotoId = await _photoService.StorePhotoAsync(productDto.PhotoFile);
 
             _context.Products.Add(product);
 
@@ -65,11 +65,11 @@ namespace RF1.Services
             {
                 if (!string.IsNullOrEmpty(productInDb.PhotoId))
                 {
-                    productInDb.PhotoId = await _photoService.UpdatePhotoAsync(productDto.PhotoFile, productInDb.PhotoId, farm.UserId);
+                    productInDb.PhotoId = await _photoService.UpdatePhotoAsync(productDto.PhotoFile, productInDb.PhotoId);
                 }
                 else
                 {
-                    productInDb.PhotoId = await _photoService.StorePhotoAsync(productDto.PhotoFile, farm.UserId);
+                    productInDb.PhotoId = await _photoService.StorePhotoAsync(productDto.PhotoFile);
                 }
             }
 

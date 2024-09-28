@@ -115,7 +115,7 @@ namespace RF1.Services
 
             var farm = _mapper.Map<Farm>(farmDto);
 
-            farm.PhotoId = await _photoService.StorePhotoAsync(farmDto.PhotoFile, userId);
+            farm.PhotoId = await _photoService.StorePhotoAsync(farmDto.PhotoFile);
 
             _context.Farms.Add(farm);
             await _context.SaveChangesAsync();
@@ -125,23 +125,25 @@ namespace RF1.Services
             return farmDto;
         }
 
-        public async Task<FarmDto> UpdateFarm(int id, [FromForm] FarmDto farmDto)
+        public async Task<FarmDto> UpdateFarm([FromForm] FarmDto farmDto)
         {
-            var farmInDb = await _context.Farms.FirstOrDefaultAsync(f => f.Id == id);
+            var farmInDb = await _context.Farms.FirstOrDefaultAsync(f => f.Id == farmDto.Id);
             if (farmInDb == null) throw new ArgumentNullException("Farm not found");
 
+            var userId = _userAccessorService.GetUserId();
+            if (userId != farmDto.UserId) throw new ArgumentException("User cannot edit other user's farm");
+
             _mapper.Map(farmDto, farmInDb);
-            farmInDb.Id = id;
 
             if (farmDto.PhotoFile != null)
             {
                 if (!string.IsNullOrEmpty(farmInDb.PhotoId))
                 {
-                    farmInDb.PhotoId = await _photoService.UpdatePhotoAsync(farmDto.PhotoFile, farmInDb.PhotoId, farmInDb.UserId);
+                    farmInDb.PhotoId = await _photoService.UpdatePhotoAsync(farmDto.PhotoFile, farmInDb.PhotoId);
                 }
                 else
                 {
-                    farmInDb.PhotoId = await _photoService.StorePhotoAsync(farmDto.PhotoFile, farmInDb.UserId);
+                    farmInDb.PhotoId = await _photoService.StorePhotoAsync(farmDto.PhotoFile);
                 }
             }
 

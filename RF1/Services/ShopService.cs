@@ -102,7 +102,7 @@ namespace RF1.Services
         {
             var shop = _mapper.Map<Shop>(shopDto);
 
-            var photoId = _photoService.StorePhotoAsync(shopDto.PhotoFile, shopDto.UserId).GetAwaiter().GetResult();
+            var photoId = _photoService.StorePhotoAsync(shopDto.PhotoFile).GetAwaiter().GetResult();
             shop.PhotoId = photoId;
 
             _context.Shops.Add(shop);
@@ -125,11 +125,11 @@ namespace RF1.Services
             {
                 if (!string.IsNullOrEmpty(shopInDb.PhotoId))
                 {
-                    shopInDb.PhotoId = _photoService.UpdatePhotoAsync(shopDto.PhotoFile, shopInDb.PhotoId, shopInDb.UserId).GetAwaiter().GetResult();
+                    shopInDb.PhotoId = _photoService.UpdatePhotoAsync(shopDto.PhotoFile, shopInDb.PhotoId).GetAwaiter().GetResult();
                 }
                 else
                 {
-                    shopInDb.PhotoId = _photoService.StorePhotoAsync(shopDto.PhotoFile, shopInDb.UserId).GetAwaiter().GetResult();
+                    shopInDb.PhotoId = _photoService.StorePhotoAsync(shopDto.PhotoFile).GetAwaiter().GetResult();
                 }
             }
 

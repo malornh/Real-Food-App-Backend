@@ -2,6 +2,7 @@
 using RF1.Models;
 using RF1.Services;
 using RF1.Services.PhotoClients;
+using RF1.Services.UserAccessorService;
 using System;
 using System.IO;
 using System.Net.Http;
@@ -14,12 +15,17 @@ public class BunnyService : IPhotoService
     private string apiKey;
     private string storageUrl = "https://storage.bunnycdn.com/real-food-app";
     private readonly IPhotoLinkService _photoLinkService;
+    private readonly IUserAccessorService _userAccessorService;
 
-    public BunnyService(HttpClient httpClient, IPhotoLinkService photoLinkService, IConfiguration configuration)
+    public BunnyService(HttpClient httpClient,
+        IPhotoLinkService photoLinkService,
+        IConfiguration configuration,
+        IUserAccessorService userAccessorService)
     {
         _httpClient = httpClient;
         _photoLinkService = photoLinkService;
         apiKey = configuration["BUNNY_API_KEY"];
+        _userAccessorService = userAccessorService;
 
         if (string.IsNullOrEmpty(apiKey))
         {
@@ -27,12 +33,14 @@ public class BunnyService : IPhotoService
         }
     }
 
-    public async Task<string> StorePhotoAsync(IFormFile photo, string userId)
+    public async Task<string> StorePhotoAsync(IFormFile photo)
     {
         if (photo == null || photo.Length == 0)
         {
             throw new ArgumentException("No file provided.");
         }
+        
+         var userId = _userAccessorService.GetUserId();
 
         var photoExtension = Path.GetExtension(photo.FileName);
         var newPhotoLink = new PhotoLink
@@ -79,16 +87,18 @@ public class BunnyService : IPhotoService
         };
     }
 
-    public async Task<string> UpdatePhotoAsync(IFormFile photo, string fileName, string userId)
+    public async Task<string> UpdatePhotoAsync(IFormFile photo, string fileName)
     {
         if (photo == null || photo.Length == 0)
         {
             throw new ArgumentException("No file provided.");
         }
 
+        var userId = _userAccessorService.GetUserId();
+
         await DeletePhotoAsync(fileName);
 
-        var photoId = await StorePhotoAsync(photo, userId);
+        var photoId = await StorePhotoAsync(photo);
 
         return photoId;
     }
@@ -105,8 +115,8 @@ public class BunnyService : IPhotoService
         var response = await _httpClient.DeleteAsync(url);
 
         // Delete from db
-        await _photoLinkService.DeletePhotoLinkAsync(fileName); 
-        
+        await _photoLinkService.DeletePhotoLinkAsync(fileName);
+
         response.EnsureSuccessStatusCode();
     }
 

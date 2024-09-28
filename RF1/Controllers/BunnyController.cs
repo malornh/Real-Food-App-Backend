@@ -26,7 +26,7 @@ namespace RF1.Controllers.Api
         {
             try
             {
-                var photoId = await _photoService.StorePhotoAsync(photo, userId);
+                var photoId = await _photoService.StorePhotoAsync(photo);
                 return Ok(new { message = $"Image created successfully! {photoId}" });
             }
             catch (HttpRequestException ex)
@@ -55,7 +55,7 @@ namespace RF1.Controllers.Api
         {
             try
             {
-                var photoId = await _photoService.UpdatePhotoAsync(photo, fileName, userId);
+                var photoId = await _photoService.UpdatePhotoAsync(photo, fileName);
                 return Ok(new { message = $"Image updated successfully! {photoId}" });
             }
             catch (HttpRequestException ex)

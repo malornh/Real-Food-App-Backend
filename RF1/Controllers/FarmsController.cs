@@ -121,7 +121,7 @@ namespace RF1.Controllers.Api
                 return BadRequest(ModelState);
             }
 
-            farmDto = await _farmService.UpdateFarm(farmDto.Id, farmDto);
+            farmDto = await _farmService.UpdateFarm(farmDto);
 
             return Ok(farmDto);
         }
