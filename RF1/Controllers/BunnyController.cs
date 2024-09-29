@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace RF1.Controllers.Api
 {
 
-    // That controller is for TEST purposes only
+    // That controller is for TEST purposes only // To be deleted l8r
 
     [ApiController]
     [Route("api/[controller]")]

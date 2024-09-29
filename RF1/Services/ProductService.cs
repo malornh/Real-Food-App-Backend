@@ -52,9 +52,9 @@ namespace RF1.Services
             return productDto;
         }
 
-        public async Task<ProductDto> UpdateProduct(int id, ProductDto productDto)
+        public async Task<ProductDto> UpdateProduct(ProductDto productDto)
         {
-            var productInDb = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
+            var productInDb = await _context.Products.FirstOrDefaultAsync(p => p.Id == productDto.Id);
             if (productInDb == null) throw new ArgumentNullException();
 
             var farm = await _context.Farms.FirstOrDefaultAsync(f => f.Id == productDto.FarmId);

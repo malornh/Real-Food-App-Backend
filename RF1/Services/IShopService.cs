@@ -8,10 +8,10 @@ namespace RF1.Services
     {
         IEnumerable<ShopDto> GetShops();
         ShopDto GetShop(int id);
-        IEnumerable<ShopDto> GetShopsByUserId(string userId);
+        IEnumerable<ShopDto> GetShopsByUserId();
         ShopFullInfoDto GetShopOrdersWithFarms(int shopId);
         ShopDto CreateShop(ShopDto shopDto);
-        ShopDto UpdateShop(int id, ShopDto shopDto);
+        ShopDto UpdateShop(ShopDto shopDto);
         void DeleteShop(int id);
     }
 }

@@ -4,6 +4,7 @@ using RF1.Data;
 using RF1.Dtos;
 using RF1.Models;
 using RF1.Services.PhotoClients;
+using RF1.Services.UserAccessorService;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,12 +15,14 @@ namespace RF1.Services
         private readonly DataContext _context;
         private readonly IMapper _mapper;
         private readonly IPhotoService _photoService;
+        private readonly IUserAccessorService _userAccessorService;
 
-        public ShopsService(DataContext context, IMapper mapper, IPhotoService photoService)
+        public ShopsService(DataContext context, IMapper mapper, IPhotoService photoService, IUserAccessorService userAccessorService)
         {
             _context = context;
             _mapper = mapper;
             _photoService = photoService;
+            _userAccessorService = userAccessorService;
         }
 
         public IEnumerable<ShopDto> GetShops()
@@ -34,8 +37,10 @@ namespace RF1.Services
             return _mapper.Map<ShopDto>(shop);
         }
 
-        public IEnumerable<ShopDto> GetShopsByUserId(string userId)
+        public IEnumerable<ShopDto> GetShopsByUserId()
         {
+            var userId = _userAccessorService.GetUserId();
+
             var shops = _context.Shops
                 .Where(s => s.UserId == userId)
                 .ToList();
@@ -113,13 +118,12 @@ namespace RF1.Services
             return shopDto;
         }
 
-        public ShopDto UpdateShop(int id, ShopDto shopDto)
+        public ShopDto UpdateShop(ShopDto shopDto)
         {
-            var shopInDb = _context.Shops.FirstOrDefault(s => s.Id == id);
+            var shopInDb = _context.Shops.FirstOrDefault(s => s.Id == shopDto.Id);
             if (shopInDb == null) throw new ArgumentNullException("Shop not found");
 
             _mapper.Map(shopDto, shopInDb);
-            shopInDb.Id = id;
 
             if (shopDto.PhotoFile != null)
             {
