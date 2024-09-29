@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RF1.Data;
 using RF1.Dtos;
 using RF1.Models;
+using RF1.Services.UserAccessorService;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,13 +16,15 @@ namespace RF1.Services
         private readonly IMapper _mapper;
         private readonly IProductsService _productService;
         private readonly IShopsService _shopService;
+        private readonly IUserAccessorService _userAccessorService;
 
-        public CartsService(DataContext context, IMapper mapper, IProductsService productService, IShopsService shopService)
+        public CartsService(DataContext context, IMapper mapper, IProductsService productService, IShopsService shopService, IUserAccessorService userAccessorService)
         {
             _context = context;
             _mapper = mapper;
             _productService = productService;
             _shopService = shopService;
+            _userAccessorService = userAccessorService;
         }
 
         public async Task<IEnumerable<CartDto>> GetCarts()
@@ -42,8 +45,10 @@ namespace RF1.Services
             return _mapper.Map<CartDto>(cart);
         }
 
-        public async Task<IEnumerable<CartDto>> GetCartsByUserId(string userId)
+        public async Task<IEnumerable<CartDto>> GetCartsByUserId()
         {
+            var userId = _userAccessorService.GetUserId();
+
             var carts = await _context.Carts
                                       .Include(c => c.Product)
                                       .Include(c => c.Shop)
@@ -61,8 +66,10 @@ namespace RF1.Services
             return cartDto;
         }
 
-        public async Task<CartDto> CreateCart(int productId, int shopId, string userId)
+        public async Task<CartDto> CreateCart(int productId, int shopId)
         {
+            var userId = _userAccessorService.GetUserId();
+
             // Fetch the product and shop to avoid multiple instances
             var product = await _context.Products.FindAsync(productId);
             if (product == null)
@@ -93,26 +100,21 @@ namespace RF1.Services
             return cartDto;
         }
 
-        public async Task<bool> UpdateCart(int id, CartDto cartDto)
+        public async Task<CartDto> UpdateCart(CartDto cartDto)
         {
-            if (id != cartDto.Id)
-            {
-                return false;
-            }
-
             var cartInDb = await _context.Carts
                                          .Include(c => c.Product)
                                          .Include(c => c.Shop)
-                                         .FirstOrDefaultAsync(c => c.Id == id);
+                                         .FirstOrDefaultAsync(c => c.Id == cartDto.);
             if (cartInDb == null)
             {
-                return false;
+                throw new ArgumentNullException();
             }
 
             _mapper.Map(cartDto, cartInDb);
             await _context.SaveChangesAsync();
 
-            return true;
+            return cartDto;
         }
 
         public async Task<bool> DeleteCart(int id)

@@ -133,38 +133,25 @@ namespace RF1.Services
             return orderDto;
         }
 
-        public async Task<bool> UpdateOrder(int id, OrderDto orderDto)
+        public async Task<OrderDto> UpdateOrder(OrderDto orderDto)
         {
-            if (id != orderDto.Id)
-            {
-                return false;
-            }
-
-            var orderInDb = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
-            if (orderInDb == null)
-            {
-                return false;
-            }
+            var orderInDb = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderDto.Id);
+            if (orderInDb == null) throw new ArgumentNullException(nameof(orderDto));
 
             _mapper.Map(orderDto, orderInDb);
 
             await _context.SaveChangesAsync();
 
-            return true;
+            return orderDto;
         }
 
-        public async Task<bool> DeleteOrder(int id)
+        public async Task DeleteOrder(int id)
         {
             var orderInDb = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
-            if (orderInDb == null)
-            {
-                return false;
-            }
+            if (orderInDb == null) throw new ArgumentNullException();
 
             _context.Orders.Remove(orderInDb);
             await _context.SaveChangesAsync();
-
-            return true;
         }
     }
 }
