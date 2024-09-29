@@ -4,6 +4,7 @@ using RF1.Data;
 using RF1.Dtos;
 using RF1.Models;
 using RF1.Services.PhotoClients;
+using RF1.Services.UserAccessorService;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,12 +16,14 @@ namespace RF1.Services
         private readonly DataContext _context;
         private readonly IMapper _mapper;
         private readonly IPhotoService _photoService;
+        private readonly IUserAccessorService _userAccessorService;
 
-        public ProductsService(DataContext context, IMapper mapper, IPhotoService photoService)
+        public ProductsService(DataContext context, IMapper mapper, IPhotoService photoService, IUserAccessorService userAccessorService)
         {
             _context = context;
             _mapper = mapper;
             _photoService = photoService;
+            _userAccessorService = userAccessorService;
         }
 
         public async Task<IEnumerable<ProductDto>> GetProducts()
@@ -38,7 +41,9 @@ namespace RF1.Services
         public async Task<ProductDto> CreateProduct(ProductDto productDto)
         {
             var product = _mapper.Map<Product>(productDto);
-            var farm = GetProductsFarm(productDto);
+            var farm = await GetProductsFarmAsync(productDto);
+            var userId = _userAccessorService.GetUserId();
+            if (userId != farm.UserId) throw new ArgumentException("User cannot add products to another user's farm");
 
             product.PhotoId = await _photoService.StorePhotoAsync(productDto.PhotoFile);
 
@@ -47,7 +52,6 @@ namespace RF1.Services
             await _context.SaveChangesAsync();
 
             productDto.Id = product.Id;
-            productDto.PhotoId = product.PhotoId;
 
             return productDto;
         }
@@ -57,7 +61,9 @@ namespace RF1.Services
             var productInDb = await _context.Products.FirstOrDefaultAsync(p => p.Id == productDto.Id);
             if (productInDb == null) throw new ArgumentNullException();
 
-            var farm = await _context.Farms.FirstOrDefaultAsync(f => f.Id == productDto.FarmId);
+            var farm = await GetProductsFarmAsync(productDto);
+            var userId = _userAccessorService.GetUserId();
+            if (userId != farm.UserId) throw new ArgumentException("User cannot add products to another user's farm");
 
             _mapper.Map(productDto, productInDb);
 
@@ -85,6 +91,10 @@ namespace RF1.Services
             var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
             if (product == null) throw new ArgumentNullException();
 
+            var farm = await _context.Farms.FirstOrDefaultAsync(f => f.Id == product.Id);
+            var userId = _userAccessorService.GetUserId();
+            if (userId != farm.UserId) throw new ArgumentException("User cannot add products to another user's farm");
+
             if (product.PhotoId != null)
             {
                 await _photoService.DeletePhotoAsync(product.PhotoId);
@@ -94,18 +104,13 @@ namespace RF1.Services
             await _context.SaveChangesAsync();
         }
 
-        private Farm GetProductsFarm(ProductDto productDto)
+        private async Task<Farm> GetProductsFarmAsync(ProductDto productDto)
         {
-            var farm = _context.Farms.FirstOrDefault(f => f.Id == productDto.FarmId);
+            var farm = await _context.Farms.FirstOrDefaultAsync(f => f.Id == productDto.FarmId);
 
             if (farm == null) throw new ArgumentNullException();
 
             return farm;
-        }
-
-        private bool ProductExists(int id)
-        {
-            return _context.Products.Any(e => e.Id == id);
         }
     }
 }
