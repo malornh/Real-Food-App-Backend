@@ -77,11 +77,8 @@ namespace RF1.Controllers.Api
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCart(int id)
         {
-            var result = await _cartService.DeleteCart(id);
-            if (!result)
-            {
-                return NotFound();
-            }
+            await _cartService.DeleteCart(id);
+
             return NoContent();
         }
     }

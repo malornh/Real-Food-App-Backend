@@ -11,6 +11,6 @@ namespace RF1.Services
         Task<RatingDto> GetRating(int id);
         Task<RatingDto> CreateRating(RatingDto ratingDto);
         Task<RatingDto> UpdateRating(int id, RatingDto ratingDto);
-        Task<bool> DeleteRating(int id);
+        Task DeleteRating(int id);
     }
 }

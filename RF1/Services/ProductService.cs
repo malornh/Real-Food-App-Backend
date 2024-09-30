@@ -43,6 +43,7 @@ namespace RF1.Services
         {
             var product = _mapper.Map<Product>(productDto);
             var farm = await GetProductsFarmAsync(productDto);
+
             var userId = _userAccessorService.GetUserId();
             if (userId != farm.UserId) throw new ArgumentException("User cannot add products to another user's farm");
 
@@ -94,6 +95,7 @@ namespace RF1.Services
             if (product == null) throw new ArgumentNullException();
 
             var farm = await _context.Farms.FirstOrDefaultAsync(f => f.Id == product.Id);
+
             var userId = _userAccessorService.GetUserId();
             if (userId != farm.UserId) throw new ArgumentException("User cannot add products to another user's farm");
 
@@ -110,7 +112,7 @@ namespace RF1.Services
         {
             var farm = await _context.Farms.FirstOrDefaultAsync(f => f.Id == productDto.FarmId);
 
-            if (farm == null) throw new ArgumentNullException();
+            if (farm == null) throw new ArgumentNullException("Farm not found.");
 
             return farm;
         }

@@ -6,12 +6,12 @@ namespace RF1.Services
 {
     public interface IShopsService
     {
-        IEnumerable<ShopDto> GetShops();
-        ShopDto GetShop(int id);
-        IEnumerable<ShopDto> GetShopsByUserId();
-        ShopFullInfoDto GetShopOrdersWithFarms(int shopId);
-        ShopDto CreateShop(ShopDto shopDto);
-        ShopDto UpdateShop(int id, ShopDto shopDto);
-        void DeleteShop(int id);
+        Task<IEnumerable<ShopDto>> GetShops();
+        Task<ShopDto> GetShop(int id);
+        Task<IEnumerable<ShopDto>> GetShopsByUserId();
+        Task<ShopFullInfoDto> GetShopOrdersWithFarms(int shopId);
+        Task<ShopDto> CreateShop(ShopDto shopDto);
+        Task<ShopDto> UpdateShop(int id, ShopDto shopDto);
+        Task DeleteShop(int id);
     }
 }

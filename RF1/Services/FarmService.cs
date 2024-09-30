@@ -61,8 +61,10 @@ namespace RF1.Services
 
         public async Task<FarmDto> GetFarmByIdAsync(int id)
         {
-            var farm = await _context.Farms.FindAsync(id);
-            return farm == null ? null : _mapper.Map<FarmDto>(farm);
+            var farm = await _context.Farms.FirstOrDefaultAsync(s => s.Id == id);
+            if (farm == null) throw new KeyNotFoundException($"Farm with {id} not found");
+
+            return _mapper.Map<FarmDto>(farm);
         }
 
         public async Task<FarmFullInfoDto> GetFarmWithProductsAsync(int farmId)

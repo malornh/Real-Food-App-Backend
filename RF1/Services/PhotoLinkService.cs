@@ -17,12 +17,13 @@ namespace RF1.Services
         public async Task CreatePhotoLinkAsync(PhotoLink photoLink)
         {
             await _context.PhotoLinks.AddAsync(photoLink);
+
             await _context.SaveChangesAsync();
         }
 
-        public IQueryable GetUserPhotoLinks(string userId)
+        public async Task<IQueryable> GetUserPhotoLinks(string userId)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
             return _context.PhotoLinks.Where(p => p.UserId == user.Id).Select(u => u.Id);
         }

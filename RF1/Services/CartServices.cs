@@ -44,6 +44,9 @@ namespace RF1.Services
                                      .Include(c => c.Product)
                                      .Include(c => c.Shop)
                                      .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (cart == null) throw new ArgumentNullException($"Cart with id {id} not found.");
+
             return _mapper.Map<CartDto>(cart);
         }
 
@@ -79,17 +82,12 @@ namespace RF1.Services
         {
             var userId = _userAccessorService.GetUserId();
 
-            var product = await _context.Products.FindAsync(productId);
-            if (product == null)
-            {
-                return null;
-            }
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
+            if (product == null) throw new ArgumentNullException($"Product with id {productId} not found.");
 
-            var shop = await _context.Shops.FindAsync(shopId);
-            if (shop == null)
-            {
-                return null; 
-            }
+            var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == shopId);
+            if (shop == null) throw new ArgumentNullException($"Shop with id {shopId} not found.");
+
 
             var cart = new Cart
             {
@@ -101,8 +99,7 @@ namespace RF1.Services
             _context.Carts.Add(cart);
             await _context.SaveChangesAsync();
 
-            var cartDto = _mapper.Map<CartDto>(cart);
-            return cartDto;
+            return _mapper.Map<CartDto>(cart);
         }
 
         [HttpPut("{id}")]
@@ -115,10 +112,8 @@ namespace RF1.Services
                                          .Include(c => c.Product)
                                          .Include(c => c.Shop)
                                          .FirstOrDefaultAsync(c => c.Id == id);
-            if (cartInDb == null)
-            {
-                throw new ArgumentNullException();
-            }
+
+            if (cartInDb == null) throw new ArgumentNullException($"Cart with id {id} not found.");
 
             _mapper.Map(cartDto, cartInDb);
             await _context.SaveChangesAsync();
@@ -126,21 +121,17 @@ namespace RF1.Services
             return cartDto;
         }
 
-        public async Task<bool> DeleteCart(int id)
+        public async Task DeleteCart(int id)
         {
             var cartInDb = await _context.Carts
                                          .Include(c => c.Product)
                                          .Include(c => c.Shop)
                                          .FirstOrDefaultAsync(c => c.Id == id);
-            if (cartInDb == null)
-            {
-                return false;
-            }
+
+            if (cartInDb == null) throw new ArgumentNullException($"Cart with id {id} not found.");
 
             _context.Carts.Remove(cartInDb);
             await _context.SaveChangesAsync();
-
-            return true;
         }
     }
 }

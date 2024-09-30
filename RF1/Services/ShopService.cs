@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RF1.Data;
 using RF1.Dtos;
@@ -25,35 +27,35 @@ namespace RF1.Services
             _userAccessorService = userAccessorService;
         }
 
-        public IEnumerable<ShopDto> GetShops()
+        public async Task<IEnumerable<ShopDto>> GetShops()
         {
-            var shops = _context.Shops.ToList();
+            var shops = await _context.Shops.ToListAsync();
 
             return _mapper.Map<List<ShopDto>>(shops);
         }
 
-        public ShopDto GetShop(int id)
+        public async Task<ShopDto> GetShop(int id)
         {
-            var shop = _context.Shops.FirstOrDefaultAsync(s => s.Id == id);
+            var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == id);
             if (shop == null) throw new ArgumentNullException("Shop not found."); 
 
             return _mapper.Map<ShopDto>(shop);
         }
 
-        public IEnumerable<ShopDto> GetShopsByUserId()
+        public async Task<IEnumerable<ShopDto>> GetShopsByUserId()
         {
             var userId = _userAccessorService.GetUserId();
 
-            var shops = _context.Shops
+            var shops = await _context.Shops
                 .Where(s => s.UserId == userId)
-                .ToList();
+                .ToListAsync();
 
             return _mapper.Map<List<ShopDto>>(shops);
         }
 
-        public ShopFullInfoDto GetShopOrdersWithFarms(int shopId)
+        public async Task<ShopFullInfoDto> GetShopOrdersWithFarms(int shopId)
         {
-            var shopOrdersWithFarms = _context.Orders
+            var shopOrdersWithFarms = await _context.Orders
                 .Where(o => o.ShopId == shopId)
                 .Select(o => new OrderFarmDto
                 {
@@ -85,9 +87,9 @@ namespace RF1.Services
                         PhotoId = o.Product.Farm.PhotoId
                     }
                 })
-                .ToList();
+                .ToListAsync();
 
-            var shopDetails = _context.Shops
+            var shopDetails = await _context.Shops
                 .Where(s => s.Id == shopId)
                 .Select(s => new ShopFullInfoDto
                 {
@@ -101,12 +103,12 @@ namespace RF1.Services
                     Rating = s.Rating,
                     Orders = shopOrdersWithFarms
                 })
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
             return shopDetails;
         }
 
-        public ShopDto CreateShop(ShopDto shopDto)
+        public async Task<ShopDto> CreateShop(ShopDto shopDto)
         {
             var shop = _mapper.Map<Shop>(shopDto);
             var userId = _userAccessorService.GetUserId();
@@ -124,9 +126,9 @@ namespace RF1.Services
         }
 
 
-        public ShopDto UpdateShop(int id, ShopDto shopDto)
+        public async Task<ShopDto> UpdateShop(int id, ShopDto shopDto)
         {
-            var shopInDb = _context.Shops.FirstOrDefault(s => s.Id == shopDto.Id);
+            var shopInDb = await _context.Shops.FirstOrDefaultAsync(s => s.Id == shopDto.Id);
             if (shopInDb == null) throw new ArgumentNullException("Shop not found");
 
             var userId = _userAccessorService.GetUserId();
@@ -152,9 +154,9 @@ namespace RF1.Services
             return shopDto;
         }
 
-        public void DeleteShop(int id)
+        public async Task DeleteShop(int id)
         {
-            var shop = _context.Shops.FirstOrDefault(s => s.Id == id);
+            var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == id);
             if (shop == null) throw new ArgumentNullException("Shop not found.");
 
             var userId = _userAccessorService.GetUserId();
@@ -166,7 +168,7 @@ namespace RF1.Services
             }
 
             _context.Shops.Remove(shop);
-            _context.SaveChanges();
+             await _context.SaveChangesAsync();
         }
     }
 }

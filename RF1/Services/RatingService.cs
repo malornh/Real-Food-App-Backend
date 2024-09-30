@@ -24,12 +24,14 @@ namespace RF1.Services
         public async Task<IEnumerable<RatingDto>> GetRatings()
         {
             var ratings = await _context.Ratings.ToListAsync();
+
             return _mapper.Map<List<RatingDto>>(ratings);
         }
 
         public async Task<RatingDto> GetRating(int id)
         {
             var rating = await _context.Ratings.FindAsync(id);
+
             return _mapper.Map<RatingDto>(rating);
         }
 
@@ -61,23 +63,14 @@ namespace RF1.Services
             return ratingDto;
         }
 
-        public async Task<bool> DeleteRating(int id)
+        public async Task DeleteRating(int id)
         {
-            var rating = await _context.Ratings.FindAsync(id);
-            if (rating == null)
-            {
-                return false;
-            }
+            var rating = await _context.Ratings.FirstOrDefaultAsync(r => r.Id == id);
+            if (rating == null) throw new ArgumentNullException($"Rating with id {id} not found");
 
             _context.Ratings.Remove(rating);
+
             await _context.SaveChangesAsync();
-
-            return true;
-        }
-
-        private bool RatingExists(int id)
-        {
-            return _context.Ratings.Any(e => e.Id == id);
         }
     }
 }

@@ -53,26 +53,16 @@ namespace RF1.Controllers.Api
 
         // PUT: api/Ratings/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRating(int id, RatingDto ratingDto)
+        public async Task<ActionResult<RatingDto>> UpdateRating(int id, RatingDto ratingDto)
         {
-            if (id != ratingDto.Id)
-            {
-                return BadRequest("Mismatched IDs");
-            }
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var result = await _ratingsService.UpdateRating(id, ratingDto);
+            ratingDto = await _ratingsService.UpdateRating(id, ratingDto);
 
-            if (!result)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
+            return Ok(ratingDto);
         }
 
         // DELETE: api/Ratings/5
