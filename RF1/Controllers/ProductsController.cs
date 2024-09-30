@@ -71,7 +71,7 @@ namespace RF1.Controllers.Api
         {
             await _productsService.DeleteProduct(id);
 
-            return Ok();
+            return NoContent();
         }
     }
 }

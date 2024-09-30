@@ -32,6 +32,7 @@ namespace RF1.Services
         public async Task<IEnumerable<FarmDto>> GetAllFarmsAsync()
         {
             var farms = await _context.Farms.ToListAsync();
+
             return _mapper.Map<List<FarmDto>>(farms);
         }
 

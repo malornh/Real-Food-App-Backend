@@ -133,7 +133,7 @@ namespace RF1.Controllers.Api
         {
             await _farmService.DeleteFarm(id);
 
-            return Ok();
+            return NoContent();
         }
     }
 }

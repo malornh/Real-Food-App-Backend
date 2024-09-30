@@ -69,11 +69,8 @@ namespace RF1.Controllers.Api
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRating(int id)
         {
-            var result = await _ratingsService.DeleteRating(id);
-            if (!result)
-            {
-                return NotFound();
-            }
+            await _ratingsService.DeleteRating(id);
+
             return NoContent();
         }
     }
