@@ -28,12 +28,15 @@ namespace RF1.Services
         public IEnumerable<ShopDto> GetShops()
         {
             var shops = _context.Shops.ToList();
+
             return _mapper.Map<List<ShopDto>>(shops);
         }
 
         public ShopDto GetShop(int id)
         {
-            var shop = _context.Shops.Find(id);
+            var shop = _context.Shops.FirstOrDefaultAsync(s => s.Id == id);
+            if (shop == null) throw new ArgumentNullException("Shop not found."); 
+
             return _mapper.Map<ShopDto>(shop);
         }
 
@@ -106,6 +109,8 @@ namespace RF1.Services
         public ShopDto CreateShop(ShopDto shopDto)
         {
             var shop = _mapper.Map<Shop>(shopDto);
+            var userId = _userAccessorService.GetUserId();
+            shop.UserId = userId;
 
             var photoId = _photoService.StorePhotoAsync(shopDto.PhotoFile).GetAwaiter().GetResult();
             shop.PhotoId = photoId;
@@ -123,6 +128,9 @@ namespace RF1.Services
         {
             var shopInDb = _context.Shops.FirstOrDefault(s => s.Id == shopDto.Id);
             if (shopInDb == null) throw new ArgumentNullException("Shop not found");
+
+            var userId = _userAccessorService.GetUserId();
+            if (shopDto.UserId != userId) throw new UnauthorizedAccessException("User cannot edit another user's shop.");
 
             _mapper.Map(shopDto, shopInDb);
 
@@ -147,7 +155,10 @@ namespace RF1.Services
         public void DeleteShop(int id)
         {
             var shop = _context.Shops.FirstOrDefault(s => s.Id == id);
-            if (shop == null) throw new ArgumentNullException();
+            if (shop == null) throw new ArgumentNullException("Shop not found.");
+
+            var userId = _userAccessorService.GetUserId();
+            if (shop.UserId != userId) throw new UnauthorizedAccessException("User cannot edit another user's shop.");
 
             if (shop.PhotoId != null)
             {
