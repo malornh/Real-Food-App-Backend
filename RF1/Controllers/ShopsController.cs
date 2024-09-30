@@ -60,7 +60,7 @@ namespace RF1.Controllers.Api
 
         // POST: api/Shops
         [HttpPost]
-        public ActionResult<ShopDto> PostShop(ShopDto shopDto)
+        public ActionResult<ShopDto> CreateShop(ShopDto shopDto)
         {
             if (!ModelState.IsValid)
             {

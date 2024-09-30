@@ -98,9 +98,8 @@ namespace RF1.Controllers.Api
         }
 
         // POST: api/Farms
-        [Authorize]
         [HttpPost]
-        public async Task<ActionResult<FarmDto>> PostFarm(FarmDto farmDto)
+        public async Task<ActionResult<FarmDto>> CreateFarm(FarmDto farmDto)
         {
             if (!ModelState.IsValid)
             {
@@ -113,6 +112,7 @@ namespace RF1.Controllers.Api
         }
 
         // PUT: api/Farms/5
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult<FarmDto>> UpdateFarm(int id, FarmDto farmDto)
         {

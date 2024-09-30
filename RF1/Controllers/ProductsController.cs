@@ -53,7 +53,7 @@ namespace RF1.Controllers.Api
 
         // PUT: api/Products/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<ProductDto>> PutProduct(int id, ProductDto productDto)
+        public async Task<ActionResult<ProductDto>> UpdateProduct(int id, ProductDto productDto)
         {
             if (!ModelState.IsValid)
             {
