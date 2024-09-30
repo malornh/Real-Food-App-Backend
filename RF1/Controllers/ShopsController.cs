@@ -39,13 +39,10 @@ namespace RF1.Controllers.Api
 
         // GET: api/Shops/ByUser/5
         [HttpGet("ByUser/{userId}")]
-        public ActionResult<IEnumerable<ShopDto>> GetShopsByUserId(string userId)
+        public ActionResult<IEnumerable<ShopDto>> GetShopsByUserId()
         {
-            var shops = _shopsService.GetShopsByUserId(userId);
-            if (shops == null)
-            {
-                return NotFound();
-            }
+            var shops = _shopsService.GetShopsByUserId();
+
             return Ok(shops);
         }
 
@@ -75,8 +72,8 @@ namespace RF1.Controllers.Api
         }
 
         // PUT: api/Shops/5
-        [HttpPut]
-        public ActionResult<ShopDto> PutShop(ShopDto shopDto)
+        [HttpPut("{id}")]
+        public ActionResult<ShopDto> PutShop(int id, ShopDto shopDto)
         {
             if (!ModelState.IsValid)
             {

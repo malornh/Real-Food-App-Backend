@@ -81,10 +81,7 @@ namespace RF1.Controllers.Api
         public async Task<IActionResult> UpdateOrder(int id, OrderDto orderDto)
         {
             var result = await _ordersService.UpdateOrder(id, orderDto);
-            if (!result)
-            {
-                return NotFound();
-            }
+
             return Ok(orderDto);
         }
 
@@ -92,11 +89,8 @@ namespace RF1.Controllers.Api
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
-            var result = await _ordersService.DeleteOrder(id);
-            if (!result)
-            {
-                return NotFound();
-            }
+            await _ordersService.DeleteOrder(id);
+
             return NoContent();
         }
     }

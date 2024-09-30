@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RF1.Data;
 using RF1.Models;
@@ -25,9 +26,11 @@ namespace RF1.Services
 
             return _context.PhotoLinks.Where(p => p.UserId == user.Id).Select(u => u.Id);
         }
-        public async Task<PhotoLink> UpdatePhotoLink(PhotoLink photoLink)
+
+        [HttpPut("{id}")]
+        public async Task<PhotoLink> UpdatePhotoLink(string id, PhotoLink photoLink)
         {
-            var existingPhotoLink = await _context.PhotoLinks.FirstOrDefaultAsync(p => p.Id == photoLink.Id);
+            var existingPhotoLink = await _context.PhotoLinks.FirstOrDefaultAsync(p => p.Id == id);
             if (existingPhotoLink == null) throw new ArgumentNullException("Photo not found");
 
             _context.PhotoLinks.Remove(existingPhotoLink);

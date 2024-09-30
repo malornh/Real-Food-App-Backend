@@ -45,22 +45,22 @@ namespace RF1.Controllers.Api
 
         // GET: api/Cart/User/{userId}
         [HttpGet("User/{userId}")]
-        public async Task<ActionResult<IEnumerable<CartDto>>> GetCartsByUserId(string userId)
+        public async Task<ActionResult<IEnumerable<CartDto>>> GetCartsByUserId()
         {
-            var carts = await _cartService.GetCartsByUserId(userId);
+            var carts = await _cartService.GetCartsByUserId();
             return Ok(carts);
         }
 
         // POST: api/Cart
         [HttpPost]
-        public async Task<ActionResult<CartDto>> CreateCart(int productId, int shopId, string userId)
+        public async Task<ActionResult<CartDto>> CreateCart(int productId, int shopId)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var createdCart = await _cartService.CreateCart(productId, shopId, userId);
+            var createdCart = await _cartService.CreateCart(productId, shopId);
             if (createdCart == null)
             {
                 return NotFound();
@@ -74,10 +74,7 @@ namespace RF1.Controllers.Api
         public async Task<IActionResult> UpdateCart(int id, CartDto cartDto)
         {
             var result = await _cartService.UpdateCart(id, cartDto);
-            if (!result)
-            {
-                return NotFound();
-            }
+
             return Ok(cartDto);
         }
 

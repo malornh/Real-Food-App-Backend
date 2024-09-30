@@ -12,7 +12,7 @@ namespace RF1.Services
         Task<List<AllFarmOrdersDto>> GetAllFarmOrdersByFarmId(int farmId);
         Task<List<AllShopOrdersDto>> GetAllShopOrdersByShopId(int shopId);
         Task<OrderDto> CreateOrder(OrderDto orderDto);
-        Task<OrderDto> UpdateOrder(OrderDto orderDto);
+        Task<OrderDto> UpdateOrder(int id, OrderDto orderDto);
         Task DeleteOrder(int id);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RF1.Data;
 using RF1.Dtos;
@@ -56,9 +57,10 @@ namespace RF1.Services
             return productDto;
         }
 
-        public async Task<ProductDto> UpdateProduct(ProductDto productDto)
+        [HttpPut("{id}")]
+        public async Task<ProductDto> UpdateProduct(int id, ProductDto productDto)
         {
-            var productInDb = await _context.Products.FirstOrDefaultAsync(p => p.Id == productDto.Id);
+            var productInDb = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
             if (productInDb == null) throw new ArgumentNullException();
 
             var farm = await GetProductsFarmAsync(productDto);

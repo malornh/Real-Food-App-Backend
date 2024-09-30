@@ -6,7 +6,7 @@ namespace RF1.Services
     {
         IQueryable GetUserPhotoLinks(string userId);
         Task CreatePhotoLinkAsync(PhotoLink photoLink);
-        Task<PhotoLink> UpdatePhotoLink(PhotoLink photo);
+        Task<PhotoLink> UpdatePhotoLink(string id, PhotoLink photo);
         Task DeletePhotoLinkAsync(string photoId);
     }
 }

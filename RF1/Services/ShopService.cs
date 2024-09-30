@@ -118,7 +118,8 @@ namespace RF1.Services
             return shopDto;
         }
 
-        public ShopDto UpdateShop(ShopDto shopDto)
+
+        public ShopDto UpdateShop(int id, ShopDto shopDto)
         {
             var shopInDb = _context.Shops.FirstOrDefault(s => s.Id == shopDto.Id);
             if (shopInDb == null) throw new ArgumentNullException("Shop not found");

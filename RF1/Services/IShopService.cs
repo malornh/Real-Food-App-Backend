@@ -11,7 +11,7 @@ namespace RF1.Services
         IEnumerable<ShopDto> GetShopsByUserId();
         ShopFullInfoDto GetShopOrdersWithFarms(int shopId);
         ShopDto CreateShop(ShopDto shopDto);
-        ShopDto UpdateShop(ShopDto shopDto);
+        ShopDto UpdateShop(int id, ShopDto shopDto);
         void DeleteShop(int id);
     }
 }

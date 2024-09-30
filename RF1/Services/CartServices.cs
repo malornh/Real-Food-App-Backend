@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RF1.Data;
 using RF1.Dtos;
@@ -70,20 +71,18 @@ namespace RF1.Services
         {
             var userId = _userAccessorService.GetUserId();
 
-            // Fetch the product and shop to avoid multiple instances
             var product = await _context.Products.FindAsync(productId);
             if (product == null)
             {
-                return null; // or handle not found
+                return null;
             }
 
             var shop = await _context.Shops.FindAsync(shopId);
             if (shop == null)
             {
-                return null; // or handle not found
+                return null; 
             }
 
-            // Create a new Cart instance and attach existing entities
             var cart = new Cart
             {
                 UserId = userId,
@@ -91,21 +90,20 @@ namespace RF1.Services
                 Shop = shop
             };
 
-            // Add the new cart instance to the context
             _context.Carts.Add(cart);
             await _context.SaveChangesAsync();
 
-            // Map the created cart back to DTO
             var cartDto = _mapper.Map<CartDto>(cart);
             return cartDto;
         }
 
-        public async Task<CartDto> UpdateCart(CartDto cartDto)
+        [HttpPut("{id}")]
+        public async Task<CartDto> UpdateCart(int id, CartDto cartDto)
         {
             var cartInDb = await _context.Carts
                                          .Include(c => c.Product)
                                          .Include(c => c.Shop)
-                                         .FirstOrDefaultAsync(c => c.Id == cartDto.);
+                                         .FirstOrDefaultAsync(c => c.Id == id);
             if (cartInDb == null)
             {
                 throw new ArgumentNullException();

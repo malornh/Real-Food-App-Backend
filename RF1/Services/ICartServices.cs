@@ -10,7 +10,7 @@ namespace RF1.Services
         Task<CartDto> GetCart(int id);
         Task<IEnumerable<CartDto>> GetCartsByUserId();
         Task<CartDto> CreateCart(int productId, int shopId);
-        Task<CartDto> UpdateCart(CartDto cartDto);
+        Task<CartDto> UpdateCart(int id, CartDto cartDto);
         Task<bool> DeleteCart(int id);
     }
 }

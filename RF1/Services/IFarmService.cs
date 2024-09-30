@@ -14,7 +14,7 @@ namespace RF1.Services
         Task<FarmDto> GetFarmByIdAsync(int id);
         Task<FarmFullInfoDto> GetFarmWithProductsAsync(int farmId);
         Task<FarmDto> CreateFarm(FarmDto farmDto);
-        Task<FarmDto> UpdateFarm(FarmDto farmDto);
+        Task<FarmDto> UpdateFarm(int id, FarmDto farmDto);
         Task DeleteFarm(int id);
     }
 }

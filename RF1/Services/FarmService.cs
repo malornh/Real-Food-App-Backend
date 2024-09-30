@@ -125,9 +125,10 @@ namespace RF1.Services
             return farmDto;
         }
 
-        public async Task<FarmDto> UpdateFarm([FromForm] FarmDto farmDto)
+        [HttpPut("{id}")]
+        public async Task<FarmDto> UpdateFarm(int id, [FromForm] FarmDto farmDto)
         {
-            var farmInDb = await _context.Farms.FirstOrDefaultAsync(f => f.Id == farmDto.Id);
+            var farmInDb = await _context.Farms.FirstOrDefaultAsync(f => f.Id == id);
             if (farmInDb == null) throw new ArgumentNullException("Farm not found");
 
             var userId = _userAccessorService.GetUserId();

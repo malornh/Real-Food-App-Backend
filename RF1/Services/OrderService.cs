@@ -133,9 +133,10 @@ namespace RF1.Services
             return orderDto;
         }
 
-        public async Task<OrderDto> UpdateOrder(OrderDto orderDto)
+        [HttpPut("{id}")]
+        public async Task<OrderDto> UpdateOrder(int id, OrderDto orderDto)
         {
-            var orderInDb = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderDto.Id);
+            var orderInDb = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
             if (orderInDb == null) throw new ArgumentNullException(nameof(orderDto));
 
             _mapper.Map(orderDto, orderInDb);
@@ -148,7 +149,10 @@ namespace RF1.Services
         public async Task DeleteOrder(int id)
         {
             var orderInDb = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
-            if (orderInDb == null) throw new ArgumentNullException();
+            if (orderInDb == null)
+            {
+                throw new KeyNotFoundException($"Order with ID {id} not found.");
+            }
 
             _context.Orders.Remove(orderInDb);
             await _context.SaveChangesAsync();
