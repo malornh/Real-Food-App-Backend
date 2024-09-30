@@ -28,6 +28,7 @@ namespace RF1.Controllers.Api
         public async Task<ActionResult<IEnumerable<CartDto>>> GetCarts()
         {
             var carts = await _cartService.GetCarts();
+
             return Ok(carts);
         }
 
@@ -36,18 +37,16 @@ namespace RF1.Controllers.Api
         public async Task<ActionResult<CartDto>> GetCart(int id)
         {
             var cart = await _cartService.GetCart(id);
-            if (cart == null)
-            {
-                return NotFound();
-            }
+
             return Ok(cart);
         }
 
-        // GET: api/Cart/User/{userId}
-        [HttpGet("User/{userId}")]
+        // GET: api/Cart/UserCarts
+        [HttpGet("UserCarts")]
         public async Task<ActionResult<IEnumerable<CartDto>>> GetCartsByUserId()
         {
             var carts = await _cartService.GetCartsByUserId();
+
             return Ok(carts);
         }
 
@@ -61,10 +60,6 @@ namespace RF1.Controllers.Api
             }
 
             var createdCart = await _cartService.CreateCart(productId, shopId);
-            if (createdCart == null)
-            {
-                return NotFound();
-            }
 
             return CreatedAtAction(nameof(GetCart), new { id = createdCart.Id }, createdCart);
         }

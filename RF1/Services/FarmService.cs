@@ -129,7 +129,7 @@ namespace RF1.Services
         public async Task<FarmDto> UpdateFarm(int id, [FromForm] FarmDto farmDto)
         {
             var farmInDb = await _context.Farms.FirstOrDefaultAsync(f => f.Id == id);
-            if (farmInDb == null) throw new ArgumentNullException("Farm not found");
+            if (farmInDb == null) throw new KeyNotFoundException($"Farm with {id} not found");
 
             var userId = _userAccessorService.GetUserId();
             if (userId != farmDto.UserId) throw new ArgumentException("User cannot edit other user's farm");
@@ -167,11 +167,6 @@ namespace RF1.Services
 
             _context.Farms.Remove(farmInDb);
             await _context.SaveChangesAsync();
-        }
-
-        private bool FarmExists(int id)
-        {
-            return _context.Farms.Any(e => e.Id == id);
         }
     }
 }

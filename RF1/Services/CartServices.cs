@@ -34,6 +34,7 @@ namespace RF1.Services
                                       .Include(c => c.Product)
                                       .Include(c => c.Shop)
                                       .ToListAsync();
+
             return _mapper.Map<List<CartDto>>(carts);
         }
 
@@ -55,15 +56,22 @@ namespace RF1.Services
                                       .Include(c => c.Shop)
                                       .Where(c => c.UserId == userId)
                                       .ToListAsync();
+
             return _mapper.Map<List<CartDto>>(carts);
         }
 
+        // Why 2 Create Methods??
         public async Task<CartDto> CreateCart(CartDto cartDto)
         {
+            var userId = _userAccessorService.GetUserId();
+            cartDto.UserId = userId;
+
             var cart = _mapper.Map<Cart>(cartDto);
+
             _context.Carts.Add(cart);
             await _context.SaveChangesAsync();
             cartDto.Id = cart.Id;
+
             return cartDto;
         }
 
@@ -100,6 +108,9 @@ namespace RF1.Services
         [HttpPut("{id}")]
         public async Task<CartDto> UpdateCart(int id, CartDto cartDto)
         {
+            var userId = _userAccessorService.GetUserId();
+            if(cartDto.UserId != userId) throw new UnauthorizedAccessException("User cannot edit another user's cart.");
+
             var cartInDb = await _context.Carts
                                          .Include(c => c.Product)
                                          .Include(c => c.Shop)

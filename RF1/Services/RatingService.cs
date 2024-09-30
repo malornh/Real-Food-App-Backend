@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RF1.Data;
 using RF1.Dtos;
@@ -44,38 +45,20 @@ namespace RF1.Services
             return ratingDto;
         }
 
-        public async Task<bool> UpdateRating(int id, RatingDto ratingDto)
+        public async Task<RatingDto> UpdateRating(int id, RatingDto ratingDto)
         {
-            if (id != ratingDto.Id)
-            {
-                return false;
-            }
-
             var ratingInDb = await _context.Ratings.FirstOrDefaultAsync(r => r.Id == id);
             if (ratingInDb == null)
             {
-                return false;
+                throw new KeyNotFoundException($"Rating with ID {id} not found.");
             }
 
             _mapper.Map(ratingDto, ratingInDb);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RatingExists(id))
-                {
-                    return false;
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _context.SaveChangesAsync();
+            _mapper.Map(ratingInDb, ratingDto);
 
-            return true;
+            return ratingDto;
         }
 
         public async Task<bool> DeleteRating(int id)
