@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Cors.Infrastructure;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using RF1.Dtos;
 using RF1.Models;
@@ -33,6 +34,7 @@ namespace RF1.Controllers.Api
         }
 
         // GET: api/Cart/5
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<CartDto>> GetCart(int id)
         {
@@ -42,6 +44,7 @@ namespace RF1.Controllers.Api
         }
 
         // GET: api/Cart/UserCarts
+        [Authorize]
         [HttpGet("UserCarts")]
         public async Task<ActionResult<IEnumerable<CartDto>>> GetCartsByUserId()
         {
@@ -51,6 +54,7 @@ namespace RF1.Controllers.Api
         }
 
         // POST: api/Cart
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<CartDto>> CreateCart(int productId, int shopId)
         {
@@ -65,6 +69,7 @@ namespace RF1.Controllers.Api
         }
 
         // PUT: api/Cart/5
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCart(int id, CartDto cartDto)
         {
@@ -74,6 +79,7 @@ namespace RF1.Controllers.Api
         }
 
         // DELETE: api/Cart/5
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCart(int id)
         {

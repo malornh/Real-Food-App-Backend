@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RF1.Dtos;
 using RF1.Models;
 using RF1.Services;
@@ -37,7 +38,7 @@ namespace RF1.Controllers.Api
             return Ok(shop);
         }
 
-        // GET: api/Shops/ByUser/5
+        // GET: api/Shops/ByUser
         [HttpGet("ByUser/{userId}")]
         public ActionResult<IEnumerable<ShopDto>> GetShopsByUserId()
         {
@@ -59,6 +60,7 @@ namespace RF1.Controllers.Api
         }
 
         // POST: api/Shops
+        [Authorize]
         [HttpPost]
         public ActionResult<ShopDto> CreateShop(ShopDto shopDto)
         {
@@ -72,6 +74,7 @@ namespace RF1.Controllers.Api
         }
 
         // PUT: api/Shops/5
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult<ShopDto>> UpdateShop(int id, ShopDto shopDto)
         {
@@ -86,6 +89,7 @@ namespace RF1.Controllers.Api
         }
 
         // DELETE: api/Shops/5
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteShop(int id)
         {

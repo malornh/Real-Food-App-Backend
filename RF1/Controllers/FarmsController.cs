@@ -12,7 +12,6 @@ using RF1.Services;
 
 namespace RF1.Controllers.Api 
 {
-    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class FarmsController : ControllerBase
@@ -42,6 +41,7 @@ namespace RF1.Controllers.Api
             return Ok(farms);
         }
 
+        // GET: api/Farms/ByIds
         [HttpGet("ByIds")]
         public async Task<ActionResult<IEnumerable<FarmDto>>> GetFarmsByIds(string farmIds)
         {
@@ -55,11 +55,12 @@ namespace RF1.Controllers.Api
             return Ok(farms);
         }
 
-        // GET: api/Farms/ByUser/5
-        [HttpGet("ByUser/{userId}")]
-        public async Task<ActionResult<IEnumerable<FarmDto>>> GetFarmsByUserId(string userId)
+        // GET: api/Farms/ByUser
+        [Authorize]
+        [HttpGet("UserFarms")]
+        public async Task<ActionResult<IEnumerable<FarmDto>>> GetFarmsByUserId()
         {
-            var farms = await _farmService.GetFarmsByUserIdAsync(userId);
+            var farms = await _farmService.GetFarmsByUserIdAsync();
 
             if (farms == null || !farms.Any())
             {
@@ -83,7 +84,7 @@ namespace RF1.Controllers.Api
             return Ok(farm);
         }
 
-        // Method to get farm with products
+        // GET: api/Farms/5/FarmWithProducts
         [HttpGet("{farmId}/FarmWithProducts")]
         public async Task<ActionResult<FarmFullInfoDto>> GetFarmWithProducts(int farmId)
         {
@@ -98,6 +99,7 @@ namespace RF1.Controllers.Api
         }
 
         // POST: api/Farms
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<FarmDto>> CreateFarm(FarmDto farmDto)
         {
@@ -128,6 +130,7 @@ namespace RF1.Controllers.Api
 
 
         // DELETE: api/Farms/5
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFarm(int id)
         {

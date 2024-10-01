@@ -139,7 +139,9 @@ namespace RF1.Services
             var orderInDb = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
             if (orderInDb == null) throw new ArgumentNullException(nameof(orderDto));
 
-            _mapper.Map(orderDto, orderInDb);
+            orderInDb.Quantity = orderDto.Quantity;
+            orderInDb.ShopPrice = orderDto.ShopPrice;
+            orderInDb.Status = orderDto.Status;
 
             await _context.SaveChangesAsync();
 

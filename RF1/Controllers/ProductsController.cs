@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RF1.Dtos;
 using RF1.Models;
 using RF1.Services;
@@ -39,6 +40,7 @@ namespace RF1.Controllers.Api
         }
 
         // POST: api/Products
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<ProductDto>> PostProduct(ProductDto productDto)
         {
@@ -52,6 +54,7 @@ namespace RF1.Controllers.Api
         }
 
         // PUT: api/Products/5
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult<ProductDto>> UpdateProduct(int id, ProductDto productDto)
         {
@@ -66,6 +69,7 @@ namespace RF1.Controllers.Api
         }
 
         // DELETE: api/Products/5
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {

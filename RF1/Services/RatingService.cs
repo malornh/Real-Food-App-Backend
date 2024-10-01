@@ -46,31 +46,5 @@ namespace RF1.Services
 
             return ratingDto;
         }
-
-        public async Task<RatingDto> UpdateRating(int id, RatingDto ratingDto)
-        {
-            var ratingInDb = await _context.Ratings.FirstOrDefaultAsync(r => r.Id == id);
-            if (ratingInDb == null)
-            {
-                throw new KeyNotFoundException($"Rating with ID {id} not found.");
-            }
-
-            _mapper.Map(ratingDto, ratingInDb);
-
-            await _context.SaveChangesAsync();
-            _mapper.Map(ratingInDb, ratingDto);
-
-            return ratingDto;
-        }
-
-        public async Task DeleteRating(int id)
-        {
-            var rating = await _context.Ratings.FirstOrDefaultAsync(r => r.Id == id);
-            if (rating == null) throw new ArgumentNullException($"Rating with id {id} not found");
-
-            _context.Ratings.Remove(rating);
-
-            await _context.SaveChangesAsync();
-        }
     }
 }

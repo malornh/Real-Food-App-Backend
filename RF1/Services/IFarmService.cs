@@ -10,7 +10,7 @@ namespace RF1.Services
     {
         Task<IEnumerable<FarmDto>> GetAllFarmsAsync();
         Task<IEnumerable<FarmDto>> GetFarmsByIdsAsync(string farmIds);
-        Task<IEnumerable<FarmDto>> GetFarmsByUserIdAsync(string userId);
+        Task<IEnumerable<FarmDto>> GetFarmsByUserIdAsync();
         Task<FarmDto> GetFarmByIdAsync(int id);
         Task<FarmFullInfoDto> GetFarmWithProductsAsync(int farmId);
         Task<FarmDto> CreateFarm(FarmDto farmDto);

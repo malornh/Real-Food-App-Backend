@@ -10,9 +10,7 @@ namespace RF1.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Display(Name = "User")]
-        [Required]
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
 
         [Required]
         public string Name { get; set; }

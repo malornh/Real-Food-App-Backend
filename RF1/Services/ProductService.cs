@@ -68,7 +68,15 @@ namespace RF1.Services
             var userId = _userAccessorService.GetUserId();
             if (userId != farm.UserId) throw new ArgumentException("User cannot add products to another user's farm");
 
-            _mapper.Map(productDto, productInDb);
+            productInDb.Name = productDto.Name;
+            productInDb.Description = productDto.Description;
+            productInDb.Type = productDto.Type;
+            productInDb.MinUnitOrder = productDto.MinUnitOrder;
+            productInDb.UnitOfMeasurement = productDto.UnitOfMeasurement;
+            productInDb.Quantity = productDto.Quantity;
+            productInDb.PricePerUnit = productDto.PricePerUnit;
+            productInDb.DateUpdated = DateOnly.FromDateTime(DateTime.Now);
+            if(productDto.DeliveryRadius != null) productInDb.DeliveryRadius = productDto.DeliveryRadius;
 
             if (productDto.PhotoFile != null)
             {

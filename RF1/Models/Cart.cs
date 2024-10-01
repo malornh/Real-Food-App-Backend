@@ -23,5 +23,6 @@ namespace RF1.Models
 
         [ForeignKey("ShopId")]
         public Shop Shop { get; set; }
+        public int Quantity { get; set; }
     }
 }

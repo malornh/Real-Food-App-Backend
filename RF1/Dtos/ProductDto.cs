@@ -30,7 +30,7 @@ namespace RF1.Models
 
         [Required]
         public double PricePerUnit { get; set; }
-        public double DeliveryRadius { get; set; }
+        public double? DeliveryRadius { get; set; }
 
         [Required]
         public int MinUnitOrder { get; set; }

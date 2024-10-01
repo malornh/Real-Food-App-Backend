@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RF1.Dtos;
 using RF1.Models;
 using RF1.Services;
@@ -19,6 +20,7 @@ namespace RF1.Controllers.Api
         }
 
         // GET: api/Orders
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders()
         {
@@ -27,6 +29,7 @@ namespace RF1.Controllers.Api
         }
 
         // GET: api/Orders/5
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderDto>> GetOrder(int id)
         {
@@ -39,6 +42,7 @@ namespace RF1.Controllers.Api
         }
 
         // GET: api/Orders/AllFarmOrders/{farmId}
+        [Authorize]
         [HttpGet("AllFarmOrders/{farmId}")]
         public async Task<ActionResult<List<AllFarmOrdersDto>>> GetAllFarmOrdersByFarmId(int farmId)
         {
@@ -51,6 +55,7 @@ namespace RF1.Controllers.Api
         }
 
         // GET: api/Orders/AllShopOrders/{shopId}
+        [Authorize]
         [HttpGet("AllShopOrders/{shopId}")]
         public async Task<ActionResult<List<AllShopOrdersDto>>> GetAllShopOrdersByShopId(int shopId)
         {
@@ -64,6 +69,7 @@ namespace RF1.Controllers.Api
 
 
         // POST: api/Orders
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<OrderDto>> CreateOrder(OrderDto orderDto)
         {
@@ -77,6 +83,7 @@ namespace RF1.Controllers.Api
         }
 
         // PUT: api/Orders/5
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOrder(int id, OrderDto orderDto)
         {
@@ -86,6 +93,7 @@ namespace RF1.Controllers.Api
         }
 
         // DELETE: api/Orders/5
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
         {

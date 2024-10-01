@@ -134,7 +134,10 @@ namespace RF1.Services
             var userId = _userAccessorService.GetUserId();
             if (shopDto.UserId != userId) throw new UnauthorizedAccessException("User cannot edit another user's shop.");
 
-            _mapper.Map(shopDto, shopInDb);
+            shopInDb.Name = shopDto.Name;
+            shopInDb.Description = shopDto.Description;
+            shopInDb.Latitude = shopDto.Latitude;
+            shopInDb.Longitude = shopDto.Longitude;
 
             if (shopDto.PhotoFile != null)
             {

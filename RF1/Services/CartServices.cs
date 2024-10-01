@@ -113,9 +113,10 @@ namespace RF1.Services
                                          .Include(c => c.Shop)
                                          .FirstOrDefaultAsync(c => c.Id == id);
 
-            if (cartInDb == null) throw new ArgumentNullException($"Cart with id {id} not found.");
+            if (cartInDb == null) throw new ArgumentNullException($"Cart item with id {id} not found.");
 
-            _mapper.Map(cartDto, cartInDb);
+            cartInDb.Quantity = cartDto.Quantity;
+
             await _context.SaveChangesAsync();
 
             return cartDto;

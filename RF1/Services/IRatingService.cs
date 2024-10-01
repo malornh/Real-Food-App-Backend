@@ -10,7 +10,5 @@ namespace RF1.Services
         Task<IEnumerable<RatingDto>> GetRatings();
         Task<RatingDto> GetRating(int id);
         Task<RatingDto> CreateRating(RatingDto ratingDto);
-        Task<RatingDto> UpdateRating(int id, RatingDto ratingDto);
-        Task DeleteRating(int id);
     }
 }

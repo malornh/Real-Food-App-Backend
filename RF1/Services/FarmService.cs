@@ -46,8 +46,11 @@ namespace RF1.Services
             return _mapper.Map<List<FarmDto>>(farms);
         }
 
-        public async Task<IEnumerable<FarmDto>> GetFarmsByUserIdAsync(string userId)
+        public async Task<IEnumerable<FarmDto>> GetFarmsByUserIdAsync()
         {
+            var userId = _userAccessorService.GetUserId();
+            if (userId == null) throw new UnauthorizedAccessException("User not found.");
+
             var farms = await _context.Farms
                 .Where(f => f.UserId == userId)
                 .ToListAsync();
@@ -135,9 +138,13 @@ namespace RF1.Services
             if (farmInDb == null) throw new KeyNotFoundException($"Farm with {id} not found");
 
             var userId = _userAccessorService.GetUserId();
-            if (userId != farmDto.UserId) throw new ArgumentException("User cannot edit other user's farm");
+            if (userId != farmInDb.UserId) throw new ArgumentException("User cannot edit other user's farm");
 
-            _mapper.Map(farmDto, farmInDb);
+            farmInDb.Name = farmDto.Name;
+            farmInDb.Description = farmDto.Description;
+            farmInDb.Latitude = farmDto.Latitude;
+            farmInDb.Longitude = farmDto.Longitude;
+            farmInDb.DefaultDeliveryRadius = farmDto.DefaultDeliveryRadius;
 
             if (farmDto.PhotoFile != null)
             {
@@ -161,7 +168,10 @@ namespace RF1.Services
         public async Task DeleteFarm(int id)
         {
             var farmInDb = await _context.Farms.FirstOrDefaultAsync(f => f.Id == id);
-            if (farmInDb == null) throw new ArgumentNullException();
+            if (farmInDb == null) throw new ArgumentNullException("Farm not found.");
+
+            var userId = _userAccessorService.GetUserId();
+            if (userId != farmInDb.UserId) throw new UnauthorizedAccessException("User cannot delete another user's farm.");
 
             if (farmInDb.PhotoId != null)
             {

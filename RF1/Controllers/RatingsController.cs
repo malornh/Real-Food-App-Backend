@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RF1.Dtos;
 using RF1.Models;
 using RF1.Services;
@@ -39,6 +40,7 @@ namespace RF1.Controllers.Api
         }
 
         // POST: api/Ratings
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<RatingDto>> CreateRating(RatingDto ratingDto)
         {
@@ -49,29 +51,6 @@ namespace RF1.Controllers.Api
 
             var createdRating = await _ratingsService.CreateRating(ratingDto);
             return CreatedAtAction(nameof(GetRating), new { id = createdRating.Id }, createdRating);
-        }
-
-        // PUT: api/Ratings/5
-        [HttpPut("{id}")]
-        public async Task<ActionResult<RatingDto>> UpdateRating(int id, RatingDto ratingDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            ratingDto = await _ratingsService.UpdateRating(id, ratingDto);
-
-            return Ok(ratingDto);
-        }
-
-        // DELETE: api/Ratings/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRating(int id)
-        {
-            await _ratingsService.DeleteRating(id);
-
-            return NoContent();
         }
     }
 }
