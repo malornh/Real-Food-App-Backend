@@ -20,56 +20,52 @@ namespace RF1.Controllers.Api
 
         // GET: api/Shops
         [HttpGet]
-        public ActionResult<IEnumerable<ShopDto>> GetShops()
+        public async Task<ActionResult<IEnumerable<ShopDto>>> GetShops()
         {
-            var shops = _shopsService.GetShops();
+            var shops = await _shopsService.GetShops();
+
             return Ok(shops);
         }
 
         // GET: api/Shops/5
         [HttpGet("{id}")]
-        public ActionResult<ShopDto> GetShop(int id)
+        public async Task<ActionResult<ShopDto>> GetShop(int id)
         {
-            var shop = _shopsService.GetShop(id);
-            if (shop == null)
-            {
-                return NotFound();
-            }
+            var shop = await _shopsService.GetShop(id);
+
             return Ok(shop);
         }
 
         // GET: api/Shops/ByUser
         [HttpGet("ByUser/{userId}")]
-        public ActionResult<IEnumerable<ShopDto>> GetShopsByUserId()
+        public async Task<ActionResult<IEnumerable<ShopDto>>> GetShopsByUserId()
         {
-            var shops = _shopsService.GetShopsByUserId();
+            var shops = await _shopsService.GetShopsByUserId();
 
             return Ok(shops);
         }
 
         // GET: api/Shops/{shopId}/OrdersWithFarms
         [HttpGet("{shopId}/OrdersWithFarms")]
-        public ActionResult<ShopFullInfoDto> GetShopOrdersWithFarms(int shopId)
+        public async Task<ActionResult<ShopFullInfoDto>> GetShopOrdersWithFarms(int shopId)
         {
-            var shopDetails = _shopsService.GetShopOrdersWithFarms(shopId);
-            if (shopDetails == null)
-            {
-                return NotFound("No data found for the shop");
-            }
+            var shopDetails = await _shopsService.GetShopOrdersWithFarms(shopId);
+
             return Ok(shopDetails);
         }
 
         // POST: api/Shops
         [Authorize]
         [HttpPost]
-        public ActionResult<ShopDto> CreateShop(ShopDto shopDto)
+        public async Task<ActionResult<ShopDto>> CreateShop(ShopDto shopDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var createdShop = _shopsService.CreateShop(shopDto);
+            var createdShop = await _shopsService.CreateShop(shopDto);
+
             return CreatedAtAction(nameof(GetShop), new { id = createdShop.Id }, createdShop);
         }
 
