@@ -37,7 +37,7 @@ namespace RF1.Controllers.Api
         }
 
         // GET: api/Shops/ByUser
-        [HttpGet("ByUser/{userId}")]
+        [HttpGet("UserShops")]
         public async Task<ActionResult<IEnumerable<ShopDto>>> GetShopsByUserId()
         {
             var shops = await _shopsService.GetShopsByUserId();

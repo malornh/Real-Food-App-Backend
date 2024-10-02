@@ -126,10 +126,15 @@ namespace RF1.Services
 
         public async Task<OrderDto> CreateOrder(OrderDto orderDto)
         {
+            if (orderDto.ProductId == null) throw new ArgumentNullException("ProductId is required.");
+            if (orderDto.ShopId == null) throw new ArgumentNullException("ShopId is required.");
+
             var order = _mapper.Map<Order>(orderDto);
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
+
             orderDto.Id = order.Id;
+
             return orderDto;
         }
 
@@ -139,25 +144,15 @@ namespace RF1.Services
             var orderInDb = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
             if (orderInDb == null) throw new ArgumentNullException(nameof(orderDto));
 
-            orderInDb.Quantity = orderDto.Quantity;
             orderInDb.ShopPrice = orderDto.ShopPrice;
             orderInDb.Status = orderDto.Status;
+            orderInDb.SoldOut = orderDto.SoldOut;
 
             await _context.SaveChangesAsync();
+
+            _mapper.Map(orderInDb, orderDto);
 
             return orderDto;
-        }
-
-        public async Task DeleteOrder(int id)
-        {
-            var orderInDb = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
-            if (orderInDb == null)
-            {
-                throw new KeyNotFoundException($"Order with ID {id} not found.");
-            }
-
-            _context.Orders.Remove(orderInDb);
-            await _context.SaveChangesAsync();
         }
     }
 }

@@ -132,7 +132,7 @@ namespace RF1.Services
             if (shopInDb == null) throw new ArgumentNullException("Shop not found");
 
             var userId = _userAccessorService.GetUserId();
-            if (shopDto.UserId != userId) throw new UnauthorizedAccessException("User cannot edit another user's shop.");
+            if (shopInDb.UserId != userId) throw new UnauthorizedAccessException("User cannot edit another user's shop.");
 
             shopInDb.Name = shopDto.Name;
             shopInDb.Description = shopDto.Description;

@@ -91,15 +91,5 @@ namespace RF1.Controllers.Api
 
             return Ok(orderDto);
         }
-
-        // DELETE: api/Orders/5
-        [Authorize]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteOrder(int id)
-        {
-            await _ordersService.DeleteOrder(id);
-
-            return NoContent();
-        }
     }
 }

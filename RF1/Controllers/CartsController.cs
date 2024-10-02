@@ -11,20 +11,20 @@ namespace RF1.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CartController : ControllerBase
+    public class CartsController : ControllerBase
     {
         private readonly ICartsService _cartService;
         private readonly IProductsService _productService;
         private readonly IShopsService _shopService;
 
-        public CartController(ICartsService cartService, IProductsService productService, IShopsService shopService)
+        public CartsController(ICartsService cartService, IProductsService productService, IShopsService shopService)
         {
             _cartService = cartService;
             _productService = productService;
             _shopService = shopService;
         }
 
-        // GET: api/Cart
+        // GET: api/Carts
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CartDto>>> GetCarts()
         {
@@ -33,7 +33,7 @@ namespace RF1.Controllers.Api
             return Ok(carts);
         }
 
-        // GET: api/Cart/5
+        // GET: api/Carts/5
         [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<CartDto>> GetCart(int id)
@@ -43,7 +43,7 @@ namespace RF1.Controllers.Api
             return Ok(cart);
         }
 
-        // GET: api/Cart/UserCarts
+        // GET: api/Carts/UserCarts
         [Authorize]
         [HttpGet("UserCarts")]
         public async Task<ActionResult<IEnumerable<CartDto>>> GetCartsByUserId()
@@ -53,32 +53,27 @@ namespace RF1.Controllers.Api
             return Ok(carts);
         }
 
-        // POST: api/Cart
+        // POST: api/Carts
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<CartDto>> CreateCart(int productId, int shopId)
+        public async Task<ActionResult<CartDto>> CreateCart([FromForm] int orderId)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var createdCart = await _cartService.CreateCart(productId, shopId);
+            var createdCart = await _cartService.CreateCart(orderId);
 
             return CreatedAtAction(nameof(GetCart), new { id = createdCart.Id }, createdCart);
         }
 
-        // PUT: api/Cart/5
+        // PUT: api/Carts/5
         [Authorize]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCart(int id, CartDto cartDto)
+        public async Task<IActionResult> UpdateCart(int id, [FromForm] int quantity)
         {
-            var result = await _cartService.UpdateCart(id, cartDto);
+            var updatedCart = await _cartService.UpdateCart(id, quantity);
 
-            return Ok(cartDto);
+            return Ok(updatedCart);
         }
 
-        // DELETE: api/Cart/5
+        // DELETE: api/Carts/5
         [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCart(int id)

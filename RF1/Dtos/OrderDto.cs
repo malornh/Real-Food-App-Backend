@@ -11,11 +11,9 @@ namespace RF1.Models
         public int Id { get; set; }
 
         [Display(Name = "Shop")]
-        [Required]
         public int ShopId { get; set; }
 
         [Display(Name = "Product")]
-        [Required]
         public int ProductId { get; set; }
         public int Quantity { get; set; }
         public double? ShopPrice { get; set; }

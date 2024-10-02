@@ -63,30 +63,18 @@ namespace RF1.Services
             return _mapper.Map<List<CartDto>>(carts);
         }
 
-        // Why 2 Create Methods??
-        public async Task<CartDto> CreateCart(CartDto cartDto)
-        {
-            var userId = _userAccessorService.GetUserId();
-            cartDto.UserId = userId;
-
-            var cart = _mapper.Map<Cart>(cartDto);
-
-            _context.Carts.Add(cart);
-            await _context.SaveChangesAsync();
-            cartDto.Id = cart.Id;
-
-            return cartDto;
-        }
-
-        public async Task<CartDto> CreateCart(int productId, int shopId)
+        public async Task<CartDto> CreateCart(int orderId)
         {
             var userId = _userAccessorService.GetUserId();
 
-            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
-            if (product == null) throw new ArgumentNullException($"Product with id {productId} not found.");
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderId);
+            if (order == null) throw new ArgumentNullException("Order not found.");
 
-            var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == shopId);
-            if (shop == null) throw new ArgumentNullException($"Shop with id {shopId} not found.");
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == order.ProductId);
+            if (product == null) throw new ArgumentNullException($"Order's product with id {order.ProductId} not found.");
+
+            var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == order.ShopId);
+            if (shop == null) throw new ArgumentNullException($"Order's shop with id {order.ShopId} not found.");
 
 
             var cart = new Cart
@@ -103,10 +91,9 @@ namespace RF1.Services
         }
 
         [HttpPut("{id}")]
-        public async Task<CartDto> UpdateCart(int id, CartDto cartDto)
+        public async Task<CartDto> UpdateCart(int id, int quantity)
         {
             var userId = _userAccessorService.GetUserId();
-            if(cartDto.UserId != userId) throw new UnauthorizedAccessException("User cannot edit another user's cart.");
 
             var cartInDb = await _context.Carts
                                          .Include(c => c.Product)
@@ -114,22 +101,26 @@ namespace RF1.Services
                                          .FirstOrDefaultAsync(c => c.Id == id);
 
             if (cartInDb == null) throw new ArgumentNullException($"Cart item with id {id} not found.");
+            if (cartInDb.UserId != userId) throw new UnauthorizedAccessException("User cannot edit another user's cart.");
 
-            cartInDb.Quantity = cartDto.Quantity;
+            cartInDb.Quantity = quantity;
 
             await _context.SaveChangesAsync();
 
-            return cartDto;
+            return _mapper.Map<CartDto>(cartInDb);
         }
 
         public async Task DeleteCart(int id)
         {
+            var userId = _userAccessorService.GetUserId();
+
             var cartInDb = await _context.Carts
                                          .Include(c => c.Product)
                                          .Include(c => c.Shop)
                                          .FirstOrDefaultAsync(c => c.Id == id);
 
             if (cartInDb == null) throw new ArgumentNullException($"Cart with id {id} not found.");
+            if (cartInDb.UserId != userId) throw new UnauthorizedAccessException("User cannot delete another user's cart.");
 
             _context.Carts.Remove(cartInDb);
             await _context.SaveChangesAsync();

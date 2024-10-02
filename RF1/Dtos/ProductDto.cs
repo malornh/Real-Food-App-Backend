@@ -16,11 +16,9 @@ namespace RF1.Models
         public string Type { get; set; }
 
         [Display(Name = "Farm")]
-        [Required]
         public int FarmId { get; set; }
 
-        [Required]
-        public IFormFile PhotoFile { get; set; }
+        public IFormFile? PhotoFile { get; set; }
         public string? PhotoId { get; set; }
         public string? Description { get; set; }
 
