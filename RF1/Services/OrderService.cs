@@ -124,18 +124,36 @@ namespace RF1.Services
         }
 
 
-        public async Task<OrderDto> CreateOrder(OrderDto orderDto)
+        public async Task<OrderBulkDto> CreateOrder(OrderDto orderDto)
         {
             if (orderDto.ProductId == null) throw new ArgumentNullException("ProductId is required.");
             if (orderDto.ShopId == null) throw new ArgumentNullException("ShopId is required.");
 
-            var order = _mapper.Map<Order>(orderDto);
-            _context.Orders.Add(order);
+            var orderInDb = _mapper.Map<Order>(orderDto);
+            _context.Orders.Add(orderInDb);
             await _context.SaveChangesAsync();
 
-            orderDto.Id = order.Id;
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == orderInDb.ProductId);
+            var shop = await _context.Shops.FirstOrDefaultAsync(s => s.Id == orderInDb.ShopId);
+            var farm = await _context.Farms.FirstOrDefaultAsync(f => f.Id == product.FarmId);
 
-            return orderDto;
+            var productDto = _mapper.Map<ProductDto>(product);
+            var shopDto = _mapper.Map<ShopDto>(shop);
+            var farmDto = _mapper.Map<FarmDto>(farm);
+
+            var orderBulk = new OrderBulkDto
+            {
+                Id = orderInDb.Id,
+                Status = orderInDb.Status,
+                Quantity = orderInDb.Quantity,
+                ShopPrice = (decimal?)orderInDb.ShopPrice,
+                DateOrdered = orderInDb.DateOrdered.ToDateTime(new TimeOnly()),
+                Product = productDto,
+                Shop = shopDto,
+                Farm = farmDto
+            };
+
+            return orderBulk;
         }
 
         [HttpPut("{id}")]
