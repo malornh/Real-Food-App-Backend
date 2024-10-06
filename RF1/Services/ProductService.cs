@@ -30,12 +30,21 @@ namespace RF1.Services
         public async Task<IEnumerable<ProductDto>> GetProducts()
         {
             var products = await _context.Products.ToListAsync();
+
             return _mapper.Map<List<ProductDto>>(products);
+        }
+
+        public async Task<IEnumerable<string>> GetAllProductTypes()
+        {
+            var productTypes = await _context.Products.Select(p => p.Type).Distinct().ToListAsync();
+
+            return productTypes;
         }
 
         public async Task<ProductDto> GetProduct(int id)
         {
             var product = await _context.Products.FindAsync(id);
+
             return _mapper.Map<ProductDto>(product);
         }
 

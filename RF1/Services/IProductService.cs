@@ -8,6 +8,7 @@ namespace RF1.Services
     public interface IProductsService
     {
         Task<IEnumerable<ProductDto>> GetProducts();
+        Task<IEnumerable<string>> GetAllProductTypes();
         Task<ProductDto> GetProduct(int id);
         Task<ProductDto> CreateProduct(ProductDto productDto);
         Task<ProductDto> UpdateProduct(int id, ProductDto productDto);

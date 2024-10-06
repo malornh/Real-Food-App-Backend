@@ -27,6 +27,14 @@ namespace RF1.Controllers.Api
             return Ok(products);
         }
 
+        [HttpGet("GetTypes")]
+        public async Task<ActionResult<IEnumerable<string>>> GetProductTypes()
+        {
+            var types = await _productsService.GetAllProductTypes();
+
+            return Ok(types);
+        }
+
         // GET: api/Products/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductDto>> GetProduct(int id)
