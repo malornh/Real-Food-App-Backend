@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RF1.Models;
 using RF1.Services.EmailService;
 using RF1.Services.UserAccessorService;
@@ -33,30 +34,21 @@ namespace RF1.Controllers
             return Ok(userId);
         }
 
-        [HttpPost("ChangePassword")]
-        [AllowAnonymous]
-        public async Task<IActionResult> ChangePassword([FromForm] string email, [FromForm] string newPassword)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null) throw new ArgumentNullException("User not found.");
-
-            await _userManager.RemovePasswordAsync(user);
-            await _userManager.AddPasswordAsync(user, newPassword);
-
-            return Ok(new { Message = "Password has been changed successfully." });
-        }
-
-        [HttpPost("forgotPassword")]
-        public IActionResult ForgotPassword([FromBody] string email)
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword([FromBody] string email)
         {
             if (string.IsNullOrEmpty(email)) return BadRequest("Email is required.");
 
-            var user = _userManager.FindByEmailAsync(email);
-            if (user == null) throw new ArgumentNullException("User not found.");
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null) return NotFound("User not found.");
 
             string resetToken = GenerateResetToken(email);
+            user.ResetToken = resetToken; 
+            user.ResetTokenExpiration = DateTime.UtcNow.AddHours(1);
 
-            string resetLink = $"https://yourfrontendapp.com/reset-password?token={resetToken}";
+            await _userManager.UpdateAsync(user); 
+
+            string resetLink = $"https://yourfrontendapp.com/ResetPassword?token={resetToken}";
 
             string subject = "Password Reset Request";
             string body = $@"
@@ -69,9 +61,50 @@ namespace RF1.Controllers
 
             return Ok(new { Message = "Password reset link has been sent to your email." });
         }
+
         private string GenerateResetToken(string email)
         {
             return Guid.NewGuid().ToString();
         }
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromForm] string token, [FromForm] string newPassword)
+        {
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(newPassword))
+            {
+                return BadRequest("Token and new password are required.");
+            }
+
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.ResetToken == token);
+
+            if (user == null)
+            {
+                return NotFound("Invalid token.");
+            }
+
+            if (user.ResetTokenExpiration < DateTime.UtcNow)
+            {
+                return BadRequest("Token has expired. Please request a new password reset.");
+            }
+
+            var result = await _userManager.RemovePasswordAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest("Error removing old password.");
+            }
+
+            result = await _userManager.AddPasswordAsync(user, newPassword);
+            if (!result.Succeeded)
+            {
+                return BadRequest("Error setting new password.");
+            }
+
+            user.ResetToken = null;
+            user.ResetTokenExpiration = null;
+            await _userManager.UpdateAsync(user);
+
+            return Ok(new { Message = "Password has been reset successfully." });
+        }
+
     }
 }
