@@ -4,6 +4,7 @@ using Microsoft.Identity.Web;
 using RF1.Data;
 using RF1.Models;
 using RF1.Services;
+using RF1.Services.EmailService;
 using RF1.Services.PhotoClients;
 using RF1.Services.UserAccessorService;
 
@@ -35,6 +36,8 @@ builder.Services.AddScoped<IPhotoLinkService, PhotoLinkService>();
 
 builder.Services.AddScoped<IUserAccessorService, UserAccessorService>();
 
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+builder.Services.AddTransient<EmailService>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
