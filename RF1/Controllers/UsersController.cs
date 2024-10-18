@@ -48,7 +48,7 @@ namespace RF1.Controllers
 
             await _userManager.UpdateAsync(user); 
 
-            string resetLink = $"https://yourfrontendapp.com/ResetPassword?token={resetToken}";
+            string resetLink = $"http://localhost:5173/?token={resetToken}";
 
             string subject = "Password Reset Request";
             string body = $@"
@@ -68,14 +68,14 @@ namespace RF1.Controllers
         }
 
         [HttpPost("ResetPassword")]
-        public async Task<IActionResult> ResetPassword([FromForm] string token, [FromForm] string newPassword)
+        public async Task<IActionResult> ResetPassword([FromForm] string resetToken, [FromForm] string newPassword)
         {
-            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(newPassword))
+            if (string.IsNullOrEmpty(resetToken) || string.IsNullOrEmpty(newPassword))
             {
                 return BadRequest("Token and new password are required.");
             }
 
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.ResetToken == token);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.ResetToken == resetToken);
 
             if (user == null)
             {
