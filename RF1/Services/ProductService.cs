@@ -16,10 +16,10 @@ namespace RF1.Services
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
-        private readonly IPhotoService _photoService;
+        private readonly IFreeImageHostService _photoService;
         private readonly IUserAccessorService _userAccessorService;
 
-        public ProductsService(DataContext context, IMapper mapper, IPhotoService photoService, IUserAccessorService userAccessorService)
+        public ProductsService(DataContext context, IMapper mapper, IFreeImageHostService photoService, IUserAccessorService userAccessorService)
         {
             _context = context;
             _mapper = mapper;
@@ -58,7 +58,7 @@ namespace RF1.Services
             var userId = _userAccessorService.GetUserId();
             if (userId != farm.UserId) throw new ArgumentException("User cannot add products to another user's farm.");
 
-            product.PhotoId = await _photoService.StorePhotoAsync(productDto.PhotoFile);
+            product.PhotoUrl = await _photoService.StorePhotoAsync(productDto.PhotoFile);
 
             _context.Products.Add(product);
 
@@ -91,13 +91,13 @@ namespace RF1.Services
 
             if (productDto.PhotoFile != null)
             {
-                if (!string.IsNullOrEmpty(productInDb.PhotoId))
+                if (!string.IsNullOrEmpty(productInDb.PhotoUrl))
                 {
-                    productInDb.PhotoId = await _photoService.UpdatePhotoAsync(productDto.PhotoFile, productInDb.PhotoId);
+                    productInDb.PhotoUrl = await _photoService.UpdatePhotoAsync(productDto.PhotoFile);
                 }
                 else
                 {
-                    productInDb.PhotoId = await _photoService.StorePhotoAsync(productDto.PhotoFile);
+                    productInDb.PhotoUrl = await _photoService.StorePhotoAsync(productDto.PhotoFile);
                 }
             }
 
@@ -118,9 +118,9 @@ namespace RF1.Services
             var userId = _userAccessorService.GetUserId();
             if (userId != farm.UserId) throw new ArgumentException("User cannot add products to another user's farm");
 
-            if (product.PhotoId != null)
+            if (product.PhotoUrl != null)
             {
-                await _photoService.DeletePhotoAsync(product.PhotoId);
+                await _photoService.DeletePhotoAsync(product.PhotoUrl);
             }
 
             _context.Products.Remove(product);

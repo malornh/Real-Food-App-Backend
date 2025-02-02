@@ -31,8 +31,7 @@ builder.Services.AddScoped<IProductsService, ProductsService>();
 builder.Services.AddScoped<IRatingsService, RatingsService>();
 builder.Services.AddScoped<ICartsService, CartsService>();
 
-builder.Services.AddHttpClient<IPhotoService, BunnyService>();
-builder.Services.AddScoped<IPhotoLinkService, PhotoLinkService>();
+builder.Services.AddHttpClient<IFreeImageHostService, FreeImageHostService>();
 
 builder.Services.AddScoped<IUserAccessorService, UserAccessorService>();
 

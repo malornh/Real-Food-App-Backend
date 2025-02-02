@@ -6,7 +6,6 @@ namespace RF1.Models
     {
         public List<Farm> Farms { get; set; }
         public List<Shop> Shops { get; set; }
-        public List<PhotoLink> Photos { get; set; }
         public string? ResetToken { get; set; }
         public DateTime? ResetTokenExpiration { get; set; }
     }

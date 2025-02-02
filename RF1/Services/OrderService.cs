@@ -53,7 +53,7 @@ namespace RF1.Services
                 {
                     Id = o.Product.Id,
                     Name = o.Product.Name,
-                    PhotoId = o.Product.PhotoId,
+                    PhotoUrl = o.Product.PhotoUrl,
                     PricePerUnit = o.Product.PricePerUnit,
                     Type = o.Product.Type,
                 },
@@ -61,7 +61,7 @@ namespace RF1.Services
                 {
                     Id = o.Product.Farm.Id,
                     Name = o.Product.Farm.Name,
-                    PhotoId = o.Product.Farm.PhotoId,
+                    PhotoUrl = o.Product.Farm.PhotoUrl,
                     Latitude = o.Product.Farm.Latitude,
                     Longitude = o.Product.Farm.Longitude,
                 },
@@ -69,7 +69,7 @@ namespace RF1.Services
                 {
                     Id = o.Shop.Id,
                     Name = o.Shop.Name,
-                    PhotoId = o.Shop.PhotoId,
+                    PhotoUrl = o.Shop.PhotoUrl,
                     Latitude = o.Product.Farm.Latitude,
                     Longitude = o.Product.Farm.Longitude,
                 }
@@ -98,7 +98,7 @@ namespace RF1.Services
                 {
                     Id = o.Product.Id,
                     Name = o.Product.Name,
-                    PhotoId = o.Product.PhotoId,
+                    PhotoUrl = o.Product.PhotoUrl,
                     PricePerUnit = o.Product.PricePerUnit,
                     Type = o.Product.Type,
                 },
@@ -106,7 +106,7 @@ namespace RF1.Services
                 {
                     Id = o.Product.Farm.Id,
                     Name = o.Product.Farm.Name,
-                    PhotoId = o.Product.Farm.PhotoId,
+                    PhotoUrl = o.Product.Farm.PhotoUrl,
                     Latitude = o.Product.Farm.Latitude,
                     Longitude = o.Product.Farm.Longitude,
                 },
@@ -114,7 +114,7 @@ namespace RF1.Services
                 {
                     Id = o.Shop.Id,
                     Name = o.Shop.Name,
-                    PhotoId = o.Shop.PhotoId,
+                    PhotoUrl = o.Shop.PhotoUrl,
                     Latitude = o.Shop.Latitude,
                     Longitude = o.Shop.Longitude,
                 }

@@ -6,7 +6,7 @@ namespace RF1.Dtos
     public class FarmFullInfoDto
     {
         public int Id { get; set; }
-        public string PhotoId { get; set; }
+        public string PhotoUrl { get; set; }
         public string UserId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

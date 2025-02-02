@@ -24,10 +24,7 @@ namespace RF1.Models
 
         [Column(TypeName = "nvarchar(450)")]
         [MaxLength(450)]
-        public string? PhotoId { get; set; }
-
-        [ForeignKey("PhotoId")]
-        public PhotoLink Photo { get; set; }
+        public string? PhotoUrl { get; set; }
         public string? Description { get; set; }
 
         [Display(Name = "Unit Of Measurement")]

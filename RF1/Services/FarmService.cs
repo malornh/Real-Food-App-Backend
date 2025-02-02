@@ -18,10 +18,10 @@ namespace RF1.Services
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
-        private readonly IPhotoService _photoService;
+        private readonly IFreeImageHostService _photoService;
         private readonly IUserAccessorService _userAccessorService;
 
-        public FarmsService(DataContext context, IMapper mapper, IPhotoService photoService, IUserAccessorService userAccessorService)
+        public FarmsService(DataContext context, IMapper mapper, IFreeImageHostService photoService, IUserAccessorService userAccessorService)
         {
             _context = context;
             _mapper = mapper;
@@ -83,7 +83,7 @@ namespace RF1.Services
                     Type = p.Type,
                     PricePerUnit = p.PricePerUnit,
                     UnitOfMeasurement = p.UnitOfMeasurement,
-                    PhotoId = p.PhotoId,
+                    PhotoUrl = p.PhotoUrl,
                     FarmId = p.FarmId,
                     Quantity = p.Quantity ?? 0,
                     DeliveryRadius = p.DeliveryRadius ?? 0,
@@ -100,7 +100,7 @@ namespace RF1.Services
                 .Select(f => new FarmFullInfoDto
                 {
                     Id = f.Id,
-                    PhotoId = f.PhotoId,
+                    PhotoUrl = f.PhotoUrl,
                     UserId = f.UserId,
                     Name = f.Name,
                     Description = f.Description,
@@ -121,13 +121,13 @@ namespace RF1.Services
 
             var farm = _mapper.Map<Farm>(farmDto);
 
-            farm.PhotoId = await _photoService.StorePhotoAsync(farmDto.PhotoFile);
+            farm.PhotoUrl = await _photoService.StorePhotoAsync(farmDto.PhotoFile);
 
             _context.Farms.Add(farm);
             await _context.SaveChangesAsync();
 
             farmDto.Id = farm.Id;
-            farmDto.PhotoId = farm.PhotoId;
+            farmDto.PhotoUrl = farm.PhotoUrl;
             return farmDto;
         }
 
@@ -148,13 +148,13 @@ namespace RF1.Services
 
             if (farmDto.PhotoFile != null)
             {
-                if (!string.IsNullOrEmpty(farmInDb.PhotoId))
+                if (!string.IsNullOrEmpty(farmInDb.PhotoUrl))
                 {
-                    farmInDb.PhotoId = await _photoService.UpdatePhotoAsync(farmDto.PhotoFile, farmInDb.PhotoId);
+                    farmInDb.PhotoUrl = await _photoService.UpdatePhotoAsync(farmDto.PhotoFile);
                 }
                 else
                 {
-                    farmInDb.PhotoId = await _photoService.StorePhotoAsync(farmDto.PhotoFile);
+                    farmInDb.PhotoUrl = await _photoService.StorePhotoAsync(farmDto.PhotoFile);
                 }
             }
 
@@ -173,9 +173,9 @@ namespace RF1.Services
             var userId = _userAccessorService.GetUserId();
             if (userId != farmInDb.UserId) throw new UnauthorizedAccessException("User cannot delete another user's farm.");
 
-            if (farmInDb.PhotoId != null)
+            if (farmInDb.PhotoUrl != null)
             {
-                await _photoService.DeletePhotoAsync(farmInDb.PhotoId);
+                await _photoService.DeletePhotoAsync(farmInDb.PhotoUrl);
             }
 
             _context.Farms.Remove(farmInDb);

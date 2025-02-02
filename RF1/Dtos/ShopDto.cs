@@ -18,7 +18,7 @@ namespace RF1.Models
 
         public IFormFile? PhotoFile { get; set; }
 
-        public string? PhotoId { get; set; }
+        public string? PhotoUrl { get; set; }
 
         [Required]
         public double Latitude { get; set; }

@@ -16,10 +16,10 @@ namespace RF1.Services
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
-        private readonly IPhotoService _photoService;
+        private readonly IFreeImageHostService _photoService;
         private readonly IUserAccessorService _userAccessorService;
 
-        public ShopsService(DataContext context, IMapper mapper, IPhotoService photoService, IUserAccessorService userAccessorService)
+        public ShopsService(DataContext context, IMapper mapper, IFreeImageHostService photoService, IUserAccessorService userAccessorService)
         {
             _context = context;
             _mapper = mapper;
@@ -74,7 +74,7 @@ namespace RF1.Services
                         Type = o.Product.Type,
                         PricePerUnit = o.Product.PricePerUnit,
                         UnitOfMeasurement = o.Product.UnitOfMeasurement,
-                        PhotoId = o.Product.PhotoId,
+                        PhotoUrl = o.Product.PhotoUrl,
                         Rating = _context.Ratings
                             .Where(r => r.ProductId == o.Product.Id)
                             .Average(r => (double?)r.RatingValue) ?? 0,
@@ -84,7 +84,7 @@ namespace RF1.Services
                     {
                         Id = o.Product.FarmId,
                         Name = o.Product.Farm.Name,
-                        PhotoId = o.Product.Farm.PhotoId
+                        PhotoUrl = o.Product.Farm.PhotoUrl
                     }
                 })
                 .ToListAsync();
@@ -94,7 +94,7 @@ namespace RF1.Services
                 .Select(s => new ShopFullInfoDto
                 {
                     Id = s.Id,
-                    PhotoId = s.PhotoId,
+                    PhotoUrl = s.PhotoUrl,
                     UserId = s.UserId,
                     Name = s.Name,
                     Description = s.Description,
@@ -114,8 +114,8 @@ namespace RF1.Services
             var userId = _userAccessorService.GetUserId();
             shop.UserId = userId;
 
-            var photoId = _photoService.StorePhotoAsync(shopDto.PhotoFile).GetAwaiter().GetResult();
-            shop.PhotoId = photoId;
+            var photoUrl = _photoService.StorePhotoAsync(shopDto.PhotoFile).GetAwaiter().GetResult();
+            shop.PhotoUrl = photoUrl;
 
             _context.Shops.Add(shop);
             _context.SaveChanges();
@@ -141,14 +141,7 @@ namespace RF1.Services
 
             if (shopDto.PhotoFile != null)
             {
-                if (!string.IsNullOrEmpty(shopInDb.PhotoId))
-                {
-                    shopInDb.PhotoId = _photoService.UpdatePhotoAsync(shopDto.PhotoFile, shopInDb.PhotoId).GetAwaiter().GetResult();
-                }
-                else
-                {
-                    shopInDb.PhotoId = _photoService.StorePhotoAsync(shopDto.PhotoFile).GetAwaiter().GetResult();
-                }
+                shopInDb.PhotoUrl = _photoService.UpdatePhotoAsync(shopDto.PhotoFile).GetAwaiter().GetResult();
             }
 
             _context.SaveChanges();
@@ -165,9 +158,9 @@ namespace RF1.Services
             var userId = _userAccessorService.GetUserId();
             if (shop.UserId != userId) throw new UnauthorizedAccessException("User cannot edit another user's shop.");
 
-            if (shop.PhotoId != null)
+            if (shop.PhotoUrl != null)
             {
-                _photoService.DeletePhotoAsync(shop.PhotoId).GetAwaiter().GetResult();
+                _photoService.DeletePhotoAsync(shop.PhotoUrl).GetAwaiter().GetResult();
             }
 
             _context.Shops.Remove(shop);
